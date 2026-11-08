@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hi" data-theme="dark">
 <head>
-    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MKHJ74FJ"></script>
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MKHJ74FJ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -484,6 +484,695 @@
             .video-grid { grid-template-columns: 1fr; }
             .shorts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
+        .video-preview {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding: 0;
+            border: 0;
+            background: #08090c;
+            cursor: pointer;
+        }
+        .video-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .35s, opacity .25s;
+        }
+        .video-preview:hover img { transform: scale(1.035); opacity: .8; }
+        .preview-play {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 62px;
+            height: 44px;
+            color: #fff;
+            background: rgba(255, 0, 0, .94);
+            border-radius: 14px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, .4);
+            font-size: 1.25rem;
+            transition: transform .2s, background .2s;
+        }
+        .video-preview:hover .preview-play { transform: scale(1.09); background: #e60000; }
+        .watch-dialog {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            background: rgba(0, 0, 0, .78);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .watch-dialog.is-open { display: flex; }
+        .watch-panel {
+            width: min(1120px, 100%);
+            max-height: min(92dvh, 900px);
+            overflow: auto;
+            color: #f5f7fb;
+            background: #101218;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 20px;
+            box-shadow: 0 24px 90px rgba(0, 0, 0, .55);
+        }
+        .watch-player {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+        .watch-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        .watch-close {
+            position: absolute;
+            z-index: 1;
+            top: 14px;
+            right: 14px;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            color: #fff;
+            background: rgba(0, 0, 0, .68);
+            border: 1px solid rgba(255, 255, 255, .24);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.45rem;
+        }
+        .watch-close:hover { background: #e60000; }
+        .watch-details { padding: 22px 26px 26px; }
+        .watch-details h2 { margin: 0 0 16px; font-size: clamp(1.1rem, 2.5vw, 1.55rem); line-height: 1.4; }
+        .watch-meta { margin: -8px 0 16px; color: #a7b0aa; font-size: .88rem; }
+        .watch-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .watch-action {
+            min-height: 40px;
+            padding: 9px 15px;
+            color: #f5f7fb;
+            background: #242832;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .watch-action:hover { background: #343945; }
+        .watch-action.liked { color: #ff6876; background: rgba(255, 53, 72, .12); }
+        .watch-action.youtube { background: #e60000; border-color: #e60000; }
+        .watch-action.youtube:hover { background: #c90000; }
+        @media (max-width: 600px) {
+            .watch-dialog { align-items: flex-start; padding: 0; background: #08090c; }
+            .watch-panel {
+                width: 100%;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                border: 0;
+                border-radius: 0;
+            }
+            .watch-player { margin-top: env(safe-area-inset-top); }
+            .watch-close { top: calc(env(safe-area-inset-top) + 10px); right: 10px; }
+            .watch-details { padding: 18px 16px calc(22px + env(safe-area-inset-bottom)); }
+        }
+
+        /* Desktop discovery layout with a distinct forest-and-gold palette */
+        :root {
+            --bg-color: #0c1210;
+            --text-color: #f3f5ef;
+            --subtext-color: #9aa79d;
+            --header-bg: rgba(12, 18, 16, .96);
+            --border-color: rgba(211, 226, 214, .1);
+            --card-bg: #131d18;
+            --card-border: rgba(211, 226, 214, .1);
+            --input-bg: #17221c;
+            --input-border: rgba(211, 226, 214, .15);
+            --tab-bg: #1b2921;
+            --tab-hover: #e6bd70;
+            --tab-hover-color: #172019;
+            --accent: #e6bd70;
+            --accent-soft: rgba(230, 189, 112, .12);
+        }
+        [data-theme="light"] {
+            --bg-color: #f5f5ef;
+            --text-color: #18221b;
+            --subtext-color: #69756c;
+            --header-bg: rgba(250, 250, 246, .96);
+            --border-color: rgba(24, 34, 27, .12);
+            --card-bg: #fff;
+            --card-border: rgba(24, 34, 27, .1);
+            --input-bg: #f0f1e9;
+            --input-border: rgba(24, 34, 27, .14);
+            --tab-bg: #e8ebe1;
+            --tab-hover: #203529;
+            --tab-hover-color: #fff;
+            --accent: #9a6b1c;
+            --accent-soft: rgba(154, 107, 28, .1);
+        }
+        body {
+            display: grid;
+            grid-template-columns: 228px minmax(0, 1fr);
+            grid-template-rows: auto auto 1fr auto;
+            align-content: start;
+            background: var(--bg-color);
+        }
+        header {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            min-height: 76px;
+            gap: 30px;
+            padding: 12px 30px;
+            border-bottom-color: var(--border-color);
+            background: var(--header-bg);
+        }
+        .logo { font-size: 1.18rem; letter-spacing: -.035em; }
+        .logo span {
+            background: linear-gradient(145deg, #edd28e, #b78538);
+            color: #172019;
+            box-shadow: 0 5px 18px rgba(207, 165, 88, .2);
+        }
+        .search-area { max-width: 680px; }
+        .search-box {
+            min-height: 44px;
+            border-radius: 24px 0 0 24px;
+            padding-inline: 18px;
+        }
+        .search-btn {
+            width: 58px;
+            padding: 0;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border-color: var(--input-border);
+            border-radius: 0 24px 24px 0;
+            font-size: 1.05rem;
+        }
+        .search-btn svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+        .search-btn:hover { color: #172019; background: var(--accent); border-color: var(--accent); }
+        .theme-toggle {
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            background: var(--tab-bg);
+        }
+        .nav-tabs {
+            grid-column: 1;
+            grid-row: 2 / 4;
+            position: sticky;
+            top: 76px;
+            align-self: start;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 7px;
+            height: calc(100vh - 76px);
+            padding: 24px 14px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border: 0;
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-color);
+        }
+        .nav-tabs::before {
+            content: "MENU";
+            padding: 0 12px 8px;
+            color: var(--subtext-color);
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .14em;
+        }
+        .tab-btn {
+            width: 100%;
+            padding: 11px 13px;
+            text-align: left;
+            color: var(--subtext-color);
+            border: 1px solid transparent;
+            border-radius: 11px;
+        }
+        .tab-btn.active {
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border-color: var(--border-color);
+            box-shadow: inset 3px 0 0 var(--accent);
+        }
+        .tab-btn:hover { color: var(--text-color); background: var(--tab-bg); }
+        .categories {
+            grid-column: 2;
+            grid-row: 2;
+            position: sticky;
+            top: 76px;
+            z-index: 80;
+            flex-wrap: wrap;
+            max-width: none;
+            width: 100%;
+            margin: 0;
+            padding: 13px 28px;
+            background: var(--bg-color);
+            scrollbar-width: none;
+        }
+        .badge {
+            padding: 8px 15px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border-color: transparent;
+            border-radius: 9px;
+            font-size: .83rem;
+            font-weight: 600;
+        }
+        .badge:hover { color: #172019; background: var(--accent); border-color: var(--accent); }
+        .container {
+            grid-column: 2;
+            grid-row: 3;
+            width: 100%;
+            max-width: 1720px;
+            padding: 8px 28px 48px;
+        }
+        .hero {
+            min-height: 0;
+            padding: 8px 0 22px;
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+        }
+        .hero::after, .hero-mark { display: none; }
+        .hero-kicker {
+            margin-bottom: 5px;
+            color: var(--accent);
+            font-size: .65rem;
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(1.25rem, 2vw, 1.65rem);
+            letter-spacing: -.025em;
+        }
+        .hero h1 br { display: none; }
+        .hero p { display: none; }
+        .section-title {
+            margin: 0 0 20px;
+            font-size: 1.15rem;
+        }
+        .video-grid {
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+            gap: 30px 20px;
+        }
+        .video-card, .short-card {
+            overflow: visible;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+        .video-card:hover, .short-card:hover {
+            transform: translateY(-2px);
+            border-color: transparent;
+        }
+        .video-container, .short-container {
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            background: var(--card-bg);
+        }
+        .video-preview img { transition: transform .3s; }
+        .video-preview:hover img { opacity: 1; }
+        .preview-play {
+            width: 54px;
+            height: 40px;
+            color: #172019;
+            background: rgba(230, 189, 112, .96);
+            border-radius: 12px;
+        }
+        .video-preview:hover .preview-play { background: #f1d28d; }
+        .video-info, .short-info { padding: 12px 2px 0; gap: 6px; }
+        .video-info h3 {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            font-size: .94rem;
+            font-weight: 650;
+            line-height: 1.45;
+        }
+        .video-meta {
+            overflow: hidden;
+            color: var(--subtext-color);
+            font-size: .79rem;
+            line-height: 1.5;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .card-actions {
+            justify-content: flex-start;
+            gap: 5px;
+            margin-top: 2px;
+            padding-top: 4px;
+            border: 0;
+        }
+        .action-icon-btn { padding: 6px 8px; }
+        .action-icon-btn:hover { color: var(--accent); background: var(--accent-soft); }
+        footer {
+            grid-column: 1 / -1;
+            grid-row: 4;
+            margin: 0;
+            border-top: 1px solid var(--border-color);
+        }
+        .watch-action.youtube {
+            color: #172019;
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .watch-action.youtube:hover { background: #f1d28d; }
+        @media (max-width: 900px) {
+            body { grid-template-columns: 184px minmax(0, 1fr); }
+            header { padding-inline: 20px; }
+            .nav-tabs { padding-inline: 10px; }
+            .categories { padding-inline: 18px; }
+            .container { padding-inline: 18px; }
+            .video-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 24px 16px; }
+        }
+        @media (max-width: 680px) {
+            body { display: flex; }
+            header { position: sticky; top: 0; z-index: 100; padding: 10px 16px; }
+            .nav-tabs {
+                position: sticky;
+                top: 116px;
+                z-index: 90;
+                order: 2;
+                width: 100%;
+                min-width: 0;
+                flex-direction: row;
+                height: auto;
+                padding: 8px 12px;
+                overflow-x: auto;
+                border-right: 0;
+                border-bottom: 1px solid var(--border-color);
+                background: var(--header-bg);
+            }
+            .nav-tabs::before { display: none; }
+            .tab-btn {
+                flex: 0 0 auto;
+                width: auto;
+                text-align: center;
+                padding: 8px 11px;
+            }
+            .tab-btn.active { box-shadow: inset 0 -2px 0 var(--accent); }
+            .categories {
+                position: sticky;
+                top: 165px;
+                order: 3;
+                width: 100%;
+                min-width: 0;
+                flex-wrap: nowrap;
+                padding: 10px 14px;
+                background: var(--bg-color);
+            }
+            .container { order: 4; padding: 12px 16px 36px; }
+            .hero { padding: 8px 0 18px; }
+            .hero-kicker { font-size: .6rem; }
+            .hero h1 { font-size: 1.35rem; }
+            .video-grid { grid-template-columns: 1fr; gap: 24px; }
+            footer { order: 5; }
+        }
+        @media (max-width: 480px) {
+            header { gap: 10px; }
+            .search-area { order: 3; }
+            .nav-tabs { top: 116px; }
+            .categories { top: 163px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
+        /* Restore the original responsive dashboard layout and red accent theme. */
+        :root {
+            --bg-color: #090b10;
+            --text-color: #f5f7fb;
+            --subtext-color: #98a2b3;
+            --header-bg: rgba(12, 15, 22, .94);
+            --border-color: rgba(255, 255, 255, .09);
+            --card-bg: #121722;
+            --card-border: rgba(255, 255, 255, .08);
+            --input-bg: #111722;
+            --input-border: rgba(255, 255, 255, .12);
+            --tab-bg: #171d29;
+            --tab-hover: #f5f7fb;
+            --tab-hover-color: #111722;
+            --accent: #ff3548;
+            --accent-soft: rgba(255, 53, 72, .13);
+        }
+        [data-theme="light"] {
+            --bg-color: #f4f6fa;
+            --text-color: #161a23;
+            --subtext-color: #697386;
+            --header-bg: rgba(255, 255, 255, .94);
+            --border-color: rgba(22, 26, 35, .1);
+            --card-bg: #fff;
+            --card-border: rgba(22, 26, 35, .09);
+            --input-bg: #f4f6fa;
+            --input-border: rgba(22, 26, 35, .14);
+            --tab-bg: #e9edf4;
+            --tab-hover: #161a23;
+            --tab-hover-color: #fff;
+            --accent-soft: rgba(255, 53, 72, .1);
+        }
+        body {
+            display: flex;
+            background:
+                radial-gradient(ellipse at 50% -25%, rgba(255, 53, 72, .12), transparent 55%),
+                var(--bg-color);
+        }
+        header {
+            position: sticky;
+            min-height: 0;
+            padding: 14px max(24px, calc((100vw - 1440px) / 2));
+            gap: 28px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+        .logo { font-size: 1.25rem; letter-spacing: -.04em; }
+        .logo span {
+            background: #ff0000;
+            color: white;
+            box-shadow: 0 5px 18px rgba(255, 0, 0, .28);
+        }
+        .search-area { max-width: 620px; }
+        .search-box { min-height: 44px; border-radius: 13px 0 0 13px; }
+        .search-btn {
+            width: auto;
+            padding: 0 20px;
+            color: #fff;
+            background: var(--accent);
+            border-color: var(--accent);
+            border-radius: 0 13px 13px 0;
+        }
+        .search-btn:hover { background: #e62b3e; border-color: #e62b3e; }
+        .theme-toggle { border: 0; border-radius: 13px; }
+        .nav-tabs {
+            position: sticky;
+            top: 64px;
+            z-index: 90;
+            flex-direction: row;
+            align-items: center;
+            height: auto;
+            gap: 8px;
+            padding: 12px max(24px, calc((100vw - 1440px) / 2));
+            overflow-x: auto;
+            border: 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--header-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+        .nav-tabs::before { display: none; }
+        .tab-btn {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 9px 14px;
+            text-align: center;
+            color: var(--subtext-color);
+            border: 1px solid transparent;
+            border-radius: 10px;
+        }
+        .tab-btn.active {
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border-color: var(--border-color);
+            box-shadow: none;
+        }
+        .tab-btn:hover { color: var(--text-color); background: var(--tab-bg); }
+        .categories {
+            position: static;
+            flex-wrap: nowrap;
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 22px 25px 4px;
+            background: transparent;
+        }
+        .badge {
+            padding: 8px 14px;
+            color: var(--subtext-color);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            font-size: .85rem;
+            font-weight: 400;
+        }
+        .badge:hover { background: var(--accent-soft); color: var(--accent); border-color: rgba(255, 53, 72, .35); }
+        .container {
+            order: initial;
+            width: 100%;
+            max-width: 1440px;
+            padding: 28px 25px 48px;
+        }
+        .hero {
+            min-height: 190px;
+            padding: clamp(24px, 5vw, 48px);
+            margin-bottom: 36px;
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            background: linear-gradient(115deg, rgba(255, 53, 72, .17), rgba(91, 67, 170, .1) 48%, var(--card-bg) 100%);
+        }
+        .hero::after { display: block; }
+        .hero-mark { display: grid; }
+        .hero-kicker { margin-bottom: 13px; color: #ff7481; font-size: .76rem; }
+        .hero h1 {
+            margin-bottom: 10px;
+            font-size: clamp(1.7rem, 4vw, 2.65rem);
+            line-height: 1.12;
+            letter-spacing: -.045em;
+        }
+        .hero h1 br { display: initial; }
+        .hero p { display: block; }
+        .section-title {
+            margin: 0 0 18px;
+            font-size: clamp(1.15rem, 2vw, 1.45rem);
+        }
+        .video-grid {
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+            gap: 22px;
+        }
+        .video-card, .short-card {
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            box-shadow: 0 7px 24px rgba(0, 0, 0, .1);
+        }
+        .video-card:hover, .short-card:hover { transform: translateY(-5px); border-color: rgba(255, 53, 72, .32); }
+        .video-container, .short-container {
+            overflow: hidden;
+            border: 0;
+            border-radius: 0;
+            background: #000;
+        }
+        .preview-play {
+            width: 62px;
+            height: 44px;
+            color: #fff;
+            background: rgba(255, 53, 72, .96);
+            border-radius: 14px;
+        }
+        .video-preview:hover img { opacity: .8; }
+        .video-preview:hover .preview-play { background: #e62b3e; }
+        .video-info { padding: 14px; gap: 10px; }
+        .video-info h3 { font-size: .95rem; line-height: 1.45; }
+        .video-meta { color: var(--subtext-color); }
+        .short-info { padding: 12px; }
+        .card-actions {
+            justify-content: flex-start;
+            gap: 5px;
+            margin-top: 4px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+        .action-icon-btn { padding: 7px 9px; }
+        .action-icon-btn:hover { color: var(--accent); background: var(--accent-soft); }
+        footer {
+            order: initial;
+            grid-column: auto;
+            grid-row: auto;
+            margin-top: auto;
+        }
+        .watch-action.youtube { color: #fff; background: #e60000; border-color: #e60000; }
+        .watch-action.youtube:hover { background: #c90000; }
+        @media (max-width: 760px) {
+            header { flex-wrap: wrap; gap: 12px; padding: 12px 18px; }
+            .logo { font-size: 1.12rem; }
+            .header-actions { margin-left: auto; }
+            .search-area { order: 3; max-width: none; flex: 1 0 100%; margin: 0; }
+            .nav-tabs { position: relative; top: auto; gap: 6px; padding: 10px 18px; }
+            .tab-btn { padding: 8px 11px; font-size: .86rem; }
+            .categories { padding: 16px 18px 2px; }
+            .container { padding: 20px 18px 38px; }
+            .hero { min-height: 175px; margin-bottom: 28px; border-radius: 20px; }
+            .hero-mark { flex-basis: 58px; width: 58px; height: 58px; border-radius: 18px; }
+            .video-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+            .shorts-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 14px; }
+        }
+        @media (max-width: 480px) {
+            header { padding: 10px 15px; }
+            .logo { font-size: 1rem; }
+            .theme-toggle { width: 38px; height: 38px; }
+            .nav-tabs, .categories { padding: 8px 15px; }
+            .nav-tabs { gap: 5px; }
+            .tab-btn { padding: 8px 10px; font-size: .8rem; }
+            .container { padding: 15px; }
+            .hero { padding: 24px 20px; }
+            .hero-mark { display: none; }
+            .hero::after { right: -2%; }
+            .video-grid { grid-template-columns: 1fr; }
+            .shorts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 600px) {
+            .watch-dialog { align-items: flex-start; padding: 0; background: #08090c; }
+            .watch-panel {
+                width: 100%;
+                min-height: 100dvh;
+                max-height: 100dvh;
+                border: 0;
+                border-radius: 0;
+            }
+            .watch-player { margin-top: env(safe-area-inset-top); }
+            .watch-close { top: calc(env(safe-area-inset-top) + 10px); right: 10px; }
+            .watch-details { padding: 18px 16px calc(22px + env(safe-area-inset-bottom)); }
+        }
+        @media (min-width: 761px) {
+            .watch-dialog { padding: 22px; }
+            .watch-panel {
+                width: min(1360px, 100%);
+                max-height: 96dvh;
+            }
+            .watch-player { max-height: calc(96dvh - 150px); }
+        }
+        .watch-fullscreen {
+            position: absolute;
+            z-index: 2;
+            top: 14px;
+            right: 68px;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            color: #fff;
+            background: rgba(0, 0, 0, .68);
+            border: 1px solid rgba(255, 255, 255, .24);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+        .watch-fullscreen:hover { background: rgba(255, 53, 72, .92); }
+        .watch-player:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            max-height: none;
+            aspect-ratio: auto;
+            background: #000;
+        }
+        .watch-player:fullscreen iframe { width: 100%; height: 100%; }
+        .watch-player:fullscreen .watch-close,
+        .watch-player:fullscreen .watch-fullscreen { position: fixed; }
+        @media (max-width: 600px) {
+            .watch-fullscreen { top: calc(env(safe-area-inset-top) + 10px); right: 62px; }
+        }
     </style>
 </head>
 <body>
@@ -494,7 +1183,9 @@
             <div class="search-box">
                 <input type="text" id="searchQuery" placeholder="Search videos or shorts..." onkeypress="handleKey(event)">
             </div>
-            <button class="search-btn" onclick="executeSearch()">Search</button>
+            <button class="search-btn" onclick="executeSearch()" aria-label="Search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg>
+            </button>
         </div>
         <div class="header-actions">
             <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
@@ -523,7 +1214,7 @@
         <section class="hero">
             <div class="hero-copy">
                 <div class="hero-kicker">● YOUR PERSONAL VIDEO SPACE</div>
-                <h1>Discover something<br>worth watching.</h1>
+                <h1>Discover something worth watching.</h1>
                 <p>Search videos, explore Shorts, and keep your favorites together — all in one place.</p>
             </div>
             <div class="hero-mark" aria-hidden="true">▶</div>
@@ -558,9 +1249,29 @@
         <p>ShivaHub <span aria-hidden="true">·</span> Your personal video discovery space</p>
     </footer>
 
+    <div class="watch-dialog" id="watchDialog" aria-hidden="true">
+        <section class="watch-panel" role="dialog" aria-modal="true" aria-labelledby="watchTitle" tabindex="-1">
+            <div class="watch-player" id="watchPlayer">
+                <button class="watch-fullscreen" id="watchFullscreen" type="button" aria-label="Enter fullscreen" title="Fullscreen">⛶</button>
+                <button class="watch-close" id="watchClose" type="button" aria-label="Close video player">×</button>
+            </div>
+            <div class="watch-details">
+                <h2 id="watchTitle"></h2>
+                <p class="watch-meta" id="watchMeta"></p>
+                <div class="watch-actions">
+                    <button class="watch-action" id="watchFavorite" type="button">☆ Save</button>
+                    <button class="watch-action" id="watchShare" type="button">🔗 Share</button>
+                    <a class="watch-action youtube" id="watchYoutube" href="#" target="_blank" rel="noopener noreferrer">▶ Open on YouTube</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
     <script>
         const API_KEY = "AIzaSyDfOsM8pVU9aZ42bMpiH2DnXbFUadXpTmI"; // Add your YouTube Data API v3 key here.
         let currentMode = 'home';
+        let activeVideo = null;
+        let lastFocusedElement = null;
         
         // Load saved favorites & history from localStorage
         let favorites = JSON.parse(localStorage.getItem("shivahub_favs")) || [];
@@ -650,8 +1361,7 @@
                         let videoId = item.id.videoId;
                         let title = item.snippet.title;
                         if(!videoId || !title) return;
-                        addToHistory(videoId, title);
-                        grid.appendChild(createVideoCard(videoId, title));
+                        grid.appendChild(createVideoCard(videoId, title, item.snippet.channelTitle, item.snippet.publishedAt));
                     });
                     if(!data.items.length) showRequestError(grid, "No videos found. Try another search.");
                 } else {
@@ -683,8 +1393,7 @@
                         let videoId = item.id.videoId;
                         let title = item.snippet.title;
                         if(!videoId || !title) return;
-                        addToHistory(videoId, title);
-                        grid.appendChild(createShortCard(videoId, title));
+                        grid.appendChild(createShortCard(videoId, title, item.snippet.channelTitle, item.snippet.publishedAt));
                     });
                     if(!data.items.length) showRequestError(grid, "No Shorts found. Try another search.");
                 } else {
@@ -695,34 +1404,50 @@
             }
         }
 
-        function createVideoCard(videoId, title) {
-            return createVideoCardElement(videoId, title, false);
+        function createVideoCard(videoId, title, channelTitle, publishedAt) {
+            return createVideoCardElement(videoId, title, false, channelTitle, publishedAt);
         }
 
-        function createShortCard(videoId, title) {
-            return createVideoCardElement(videoId, title, true);
+        function createShortCard(videoId, title, channelTitle, publishedAt) {
+            return createVideoCardElement(videoId, title, true, channelTitle, publishedAt);
         }
 
-        function createVideoCardElement(videoId, title, isShort) {
+        function createVideoCardElement(videoId, title, isShort, channelTitle = "", publishedAt = "") {
             let isFav = favorites.some(v => v.id === videoId);
             let card = document.createElement("div");
             card.className = isShort ? "short-card" : "video-card";
 
             let player = document.createElement("div");
             player.className = isShort ? "short-container" : "video-container";
-            let iframe = document.createElement("iframe");
-            iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`;
-            iframe.title = title;
-            iframe.loading = "lazy";
-            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-            iframe.referrerPolicy = "strict-origin-when-cross-origin";
-            iframe.allowFullscreen = true;
-            player.appendChild(iframe);
+            let preview = document.createElement("button");
+            preview.className = "video-preview";
+            preview.type = "button";
+            preview.setAttribute("aria-label", `Play video: ${title}`);
+            let thumbnail = document.createElement("img");
+            thumbnail.src = `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+            thumbnail.alt = "";
+            thumbnail.loading = "lazy";
+            let playIcon = document.createElement("span");
+            playIcon.className = "preview-play";
+            playIcon.setAttribute("aria-hidden", "true");
+            playIcon.textContent = "▶";
+            preview.append(thumbnail, playIcon);
+            preview.addEventListener("click", () => openVideo(videoId, title, preview, channelTitle, publishedAt));
+            player.appendChild(preview);
 
             let info = document.createElement("div");
             info.className = isShort ? "short-info" : "video-info";
             let heading = document.createElement("h3");
             heading.textContent = title;
+            info.appendChild(heading);
+            if(channelTitle) {
+                let metadata = document.createElement("p");
+                metadata.className = "video-meta";
+                metadata.textContent = publishedAt
+                    ? `${channelTitle} · ${new Date(publishedAt).toLocaleDateString()}`
+                    : channelTitle;
+                info.appendChild(metadata);
+            }
             let actions = document.createElement("div");
             actions.className = "card-actions";
 
@@ -730,7 +1455,7 @@
             favoriteButton.className = `action-icon-btn${isFav ? " liked" : ""}`;
             favoriteButton.textContent = isFav ? "⭐ Saved" : "☆ Save";
             favoriteButton.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
-            favoriteButton.addEventListener("click", () => toggleFavorite(videoId, title, favoriteButton));
+            favoriteButton.addEventListener("click", () => toggleFavorite(videoId, title, favoriteButton, channelTitle, publishedAt));
 
             let shareButton = document.createElement("button");
             shareButton.className = "action-icon-btn";
@@ -738,27 +1463,78 @@
             shareButton.addEventListener("click", () => shareVideo(videoId));
 
             actions.append(favoriteButton, shareButton);
-            info.append(heading, actions);
+            info.appendChild(actions);
             card.append(player, info);
             return card;
         }
 
-        function toggleFavorite(id, title, button) {
+        function openVideo(videoId, title, trigger, channelTitle = "", publishedAt = "") {
+            activeVideo = { id: videoId, title, channelTitle, publishedAt };
+            lastFocusedElement = trigger || document.activeElement;
+            document.getElementById("watchTitle").textContent = title;
+            document.getElementById("watchMeta").textContent = channelTitle
+                ? (publishedAt ? `${channelTitle} · ${new Date(publishedAt).toLocaleDateString()}` : channelTitle)
+                : "";
+            document.getElementById("watchYoutube").href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+
+            let iframe = document.createElement("iframe");
+            iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&playsinline=1&rel=0`;
+            iframe.title = title;
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            iframe.allowFullscreen = true;
+            document.getElementById("watchPlayer").appendChild(iframe);
+
+            let dialog = document.getElementById("watchDialog");
+            dialog.classList.add("is-open");
+            dialog.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+            updateWatchFavoriteButton();
+            addToHistory(videoId, title, channelTitle, publishedAt);
+            document.getElementById("watchClose").focus();
+        }
+
+        function closeVideo() {
+            let dialog = document.getElementById("watchDialog");
+            if(!dialog.classList.contains("is-open")) return;
+            dialog.classList.remove("is-open");
+            dialog.setAttribute("aria-hidden", "true");
+            document.getElementById("watchPlayer").querySelector("iframe")?.remove();
+            document.body.style.overflow = "";
+            activeVideo = null;
+            if(lastFocusedElement?.isConnected) lastFocusedElement.focus();
+        }
+
+        function updateWatchFavoriteButton() {
+            let button = document.getElementById("watchFavorite");
+            if(!activeVideo) return;
+            let isFav = favorites.some(video => video.id === activeVideo.id);
+            button.textContent = isFav ? "⭐ Saved" : "☆ Save";
+            button.classList.toggle("liked", isFav);
+            button.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
+        }
+
+        function toggleWatchFavorite() {
+            if(!activeVideo) return;
+            toggleFavorite(activeVideo.id, activeVideo.title, document.getElementById("watchFavorite"));
+        }
+
+        function toggleFavorite(id, title, button, channelTitle = "", publishedAt = "") {
             let index = favorites.findIndex(v => v.id === id);
             if(index > -1) {
                 favorites.splice(index, 1);
             } else {
-                favorites.push({ id, title });
+                favorites.push({ id, title, channelTitle, publishedAt });
             }
             localStorage.setItem("shivahub_favs", JSON.stringify(favorites));
             updateFavCount();
-            if(currentMode === 'favorites') renderFavorites();
-            else if(button) {
+            if(button) {
                 let isFavorite = index === -1;
                 button.classList.toggle("liked", isFavorite);
                 button.textContent = isFavorite ? "⭐ Saved" : "☆ Save";
                 button.setAttribute("aria-label", isFavorite ? "Remove from favorites" : "Add to favorites");
             }
+            if(currentMode === 'favorites') renderFavorites();
         }
 
         function renderFavorites() {
@@ -769,13 +1545,13 @@
             }
             grid.innerHTML = "";
             favorites.forEach(v => {
-                grid.appendChild(createVideoCard(v.id, v.title));
+                grid.appendChild(createVideoCard(v.id, v.title, v.channelTitle, v.publishedAt));
             });
         }
 
-        function addToHistory(id, title) {
+        function addToHistory(id, title, channelTitle = "", publishedAt = "") {
             history = history.filter(v => v.id !== id);
-            history.unshift({ id, title });
+            history.unshift({ id, title, channelTitle, publishedAt });
             if(history.length > 20) history.pop();
             localStorage.setItem("shivahub_history", JSON.stringify(history));
         }
@@ -788,7 +1564,7 @@
             }
             grid.innerHTML = "";
             history.forEach(v => {
-                grid.appendChild(createVideoCard(v.id, v.title));
+                grid.appendChild(createVideoCard(v.id, v.title, v.channelTitle, v.publishedAt));
             });
         }
 
@@ -818,6 +1594,40 @@
         window.onload = () => {
             fetchHomeVideos();
         };
+        document.getElementById("watchClose").addEventListener("click", closeVideo);
+        document.getElementById("watchFullscreen").addEventListener("click", toggleVideoFullscreen);
+        document.getElementById("watchFavorite").addEventListener("click", toggleWatchFavorite);
+        document.getElementById("watchShare").addEventListener("click", () => {
+            if(activeVideo) shareVideo(activeVideo.id);
+        });
+        document.getElementById("watchDialog").addEventListener("click", event => {
+            if(event.target.id === "watchDialog") closeVideo();
+        });
+        document.addEventListener("keydown", event => {
+            if(event.key === "Escape" && !document.fullscreenElement) closeVideo();
+        });
+        document.addEventListener("fullscreenchange", () => {
+            let isFullscreen = document.fullscreenElement === document.getElementById("watchPlayer");
+            let button = document.getElementById("watchFullscreen");
+            button.textContent = isFullscreen ? "⛶" : "⛶";
+            button.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+            button.title = isFullscreen ? "Exit fullscreen" : "Fullscreen";
+        });
+
+        async function toggleVideoFullscreen() {
+            let player = document.getElementById("watchPlayer");
+            try {
+                if(document.fullscreenElement) {
+                    await document.exitFullscreen();
+                } else if(player.requestFullscreen) {
+                    await player.requestFullscreen();
+                } else {
+                    alert("Fullscreen is not supported by this browser. Use the YouTube player's fullscreen button.");
+                }
+            } catch(error) {
+                alert("Could not open fullscreen. You can use the fullscreen button in the YouTube player instead.");
+            }
+        }
     </script>
 </body>
 </html>
