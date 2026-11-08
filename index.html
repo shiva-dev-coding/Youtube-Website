@@ -1170,8 +1170,27 @@
         .watch-player:fullscreen iframe { width: 100%; height: 100%; }
         .watch-player:fullscreen .watch-close,
         .watch-player:fullscreen .watch-fullscreen { position: fixed; }
+        .watch-player.is-short {
+            width: min(56.25dvh, 100%);
+            max-width: 100%;
+            height: min(80dvh, 840px);
+            max-height: 80dvh;
+            margin-inline: auto;
+            aspect-ratio: 9 / 16;
+        }
+        .watch-panel.is-short { width: fit-content; max-width: min(96vw, 560px); }
+        .watch-panel.is-short .watch-details { width: min(560px, 96vw); }
+        .watch-player.is-short:fullscreen { width: 100vw; height: 100vh; max-width: none; max-height: none; }
         @media (max-width: 600px) {
             .watch-fullscreen { top: calc(env(safe-area-inset-top) + 10px); right: 62px; }
+            .watch-player.is-short {
+                width: min(100vw, calc((100dvh - 170px) * 9 / 16));
+                height: min(100vw * 16 / 9, calc(100dvh - 170px));
+                max-height: calc(100dvh - 170px);
+                margin: max(8px, env(safe-area-inset-top)) auto 0;
+            }
+            .watch-panel.is-short { width: 100%; }
+            .watch-panel.is-short .watch-details { width: 100%; }
         }
     </style>
 </head>
@@ -1432,7 +1451,7 @@
             playIcon.setAttribute("aria-hidden", "true");
             playIcon.textContent = "▶";
             preview.append(thumbnail, playIcon);
-            preview.addEventListener("click", () => openVideo(videoId, title, preview, channelTitle, publishedAt));
+            preview.addEventListener("click", () => openVideo(videoId, title, preview, channelTitle, publishedAt, isShort));
             player.appendChild(preview);
 
             let info = document.createElement("div");
@@ -1468,7 +1487,7 @@
             return card;
         }
 
-        function openVideo(videoId, title, trigger, channelTitle = "", publishedAt = "") {
+        function openVideo(videoId, title, trigger, channelTitle = "", publishedAt = "", isShort = false) {
             activeVideo = { id: videoId, title, channelTitle, publishedAt };
             lastFocusedElement = trigger || document.activeElement;
             document.getElementById("watchTitle").textContent = title;
@@ -1477,13 +1496,19 @@
                 : "";
             document.getElementById("watchYoutube").href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
 
+            let player = document.getElementById("watchPlayer");
+            let panel = document.querySelector(".watch-panel");
+            player.querySelectorAll("iframe").forEach(iframe => iframe.remove());
+            player.classList.toggle("is-short", isShort);
+            panel.classList.toggle("is-short", isShort);
+
             let iframe = document.createElement("iframe");
             iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&playsinline=1&rel=0`;
             iframe.title = title;
             iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
             iframe.referrerPolicy = "strict-origin-when-cross-origin";
             iframe.allowFullscreen = true;
-            document.getElementById("watchPlayer").appendChild(iframe);
+            player.appendChild(iframe);
 
             let dialog = document.getElementById("watchDialog");
             dialog.classList.add("is-open");
@@ -1499,7 +1524,10 @@
             if(!dialog.classList.contains("is-open")) return;
             dialog.classList.remove("is-open");
             dialog.setAttribute("aria-hidden", "true");
-            document.getElementById("watchPlayer").querySelector("iframe")?.remove();
+            let player = document.getElementById("watchPlayer");
+            player.querySelectorAll("iframe").forEach(iframe => iframe.remove());
+            player.classList.remove("is-short");
+            document.querySelector(".watch-panel").classList.remove("is-short");
             document.body.style.overflow = "";
             activeVideo = null;
             if(lastFocusedElement?.isConnected) lastFocusedElement.focus();
