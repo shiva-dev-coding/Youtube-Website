@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="hi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShivaHub | Video Discovery</title>
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --text-color: #ffffff;
+            --subtext-color: #aaa;
+            --header-bg: #0f0f0f;
+            --border-color: #222;
+            --card-bg: #1a1a1a;
+            --card-border: #2a2a2a;
+            --input-bg: #121212;
+            --input-border: #303030;
+            --tab-bg: #272727;
+            --tab-hover: #f1f1f1;
+            --tab-hover-color: #0f0f0f;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f9f9f9;
+            --text-color: #0f0f0f;
+            --subtext-color: #606060;
+            --header-bg: #ffffff;
+            --border-color: #e5e5e5;
+            --card-bg: #ffffff;
+            --card-border: #e0e0e0;
+            --input-bg: #f1f1f1;
+            --input-border: #ccc;
+            --tab-bg: #e5e5e5;
+            --tab-hover: #0f0f0f;
+            --tab-hover-color: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+
+        /* Header / Navbar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.4rem; font-weight: bold; cursor: pointer; }
+        .logo span { background: #ff0000; color: white; padding: 2px 8px; border-radius: 4px; }
+
+        .search-area {
+            display: flex;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 15px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 20px 0 0 20px;
+            padding: 8px 15px;
+            width: 100%;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            width: 100%;
+            outline: none;
+            font-size: 1rem;
+        }
+        .search-btn {
+            background: var(--tab-bg);
+            border: 1px solid var(--input-border);
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            padding: 8px 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .search-btn:hover { background: #ff0000; color: white; border-color: #ff0000; }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .theme-toggle {
+            background: var(--tab-bg);
+            border: none;
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 12px 25px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: var(--tab-bg);
+            border: none;
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--tab-hover);
+            color: var(--tab-hover-color);
+        }
+
+        /* Category Badges */
+        .categories {
+            display: flex;
+            gap: 10px;
+            padding: 15px 25px 5px 25px;
+            overflow-x: auto;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .badge {
+            background: var(--tab-bg);
+            color: var(--text-color);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+            transition: 0.2s;
+        }
+        .badge:hover { background: #ff0000; color: white; border-color: #ff0000; }
+
+        /* Main Content */
+        .container {
+            padding: 20px 25px;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-title { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; }
+
+        /* Video Grid (16:9) */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .video-card:hover { transform: translateY(-4px); }
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+        .video-info { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .video-info h3 {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .action-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--subtext-color);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .action-icon-btn:hover { background: var(--tab-bg); color: var(--text-color); }
+        .action-icon-btn.liked { color: #ff0000; }
+
+        /* Shorts Grid (9:16) */
+        .shorts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .short-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .short-card:hover { transform: translateY(-4px); }
+        .short-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.77%;
+            background: #000;
+        }
+        .short-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+        .short-info { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .short-info h3 {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .message { text-align: center; grid-column: 1/-1; color: var(--subtext-color); padding: 40px; font-size: 1.1rem; }
+
+        /* Creator Footer Note */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            color: var(--subtext-color);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 10px 15px; }
+            .nav-tabs, .categories { padding: 8px 15px; }
+            .container { padding: 15px; }
+        }
+
+        /* Refined responsive dashboard styles */
+        :root {
+            --bg-color: #090b10;
+            --text-color: #f5f7fb;
+            --subtext-color: #98a2b3;
+            --header-bg: rgba(12, 15, 22, .94);
+            --border-color: rgba(255, 255, 255, .09);
+            --card-bg: #121722;
+            --card-border: rgba(255, 255, 255, .08);
+            --input-bg: #111722;
+            --input-border: rgba(255, 255, 255, .12);
+            --tab-bg: #171d29;
+            --tab-hover: #f5f7fb;
+            --tab-hover-color: #111722;
+            --accent: #ff3548;
+            --accent-soft: rgba(255, 53, 72, .13);
+        }
+        [data-theme="light"] {
+            --bg-color: #f4f6fa;
+            --text-color: #161a23;
+            --subtext-color: #697386;
+            --header-bg: rgba(255, 255, 255, .94);
+            --border-color: rgba(22, 26, 35, .1);
+            --card-bg: #fff;
+            --card-border: rgba(22, 26, 35, .09);
+            --input-bg: #f4f6fa;
+            --input-border: rgba(22, 26, 35, .14);
+            --tab-bg: #e9edf4;
+            --tab-hover: #161a23;
+            --tab-hover-color: #fff;
+            --accent-soft: rgba(255, 53, 72, .1);
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            background:
+                radial-gradient(ellipse at 50% -25%, rgba(255, 53, 72, .12), transparent 55%),
+                var(--bg-color);
+            letter-spacing: .01em;
+        }
+        header {
+            position: sticky;
+            padding: 14px max(24px, calc((100vw - 1440px) / 2));
+            gap: 28px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+        .logo { flex: 0 0 auto; gap: 10px; font-size: 1.25rem; letter-spacing: -.04em; }
+        .logo span {
+            display: grid;
+            place-items: center;
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            border-radius: 11px;
+            box-shadow: 0 5px 18px rgba(255, 0, 0, .28);
+        }
+        .search-area { max-width: 620px; margin: 0 auto; }
+        .search-box { min-height: 44px; border-radius: 13px 0 0 13px; }
+        .search-btn {
+            border-radius: 0 13px 13px 0;
+            padding-inline: 20px;
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .search-btn:hover { background: #e62b3e; border-color: #e62b3e; }
+        .theme-toggle { width: 42px; height: 42px; border-radius: 13px; }
+        .nav-tabs {
+            position: sticky;
+            top: 64px;
+            z-index: 90;
+            gap: 8px;
+            padding: 12px max(24px, calc((100vw - 1440px) / 2));
+            background: var(--header-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+        .tab-btn {
+            padding: 9px 14px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--subtext-color);
+            transition: background .2s, color .2s, border-color .2s;
+        }
+        .tab-btn.active { color: var(--text-color); background: var(--tab-bg); border-color: var(--border-color); }
+        .tab-btn:hover { color: var(--text-color); background: var(--tab-bg); }
+        .categories {
+            gap: 9px;
+            padding: 22px 25px 4px;
+            max-width: 1440px;
+            scrollbar-width: none;
+        }
+        .categories::-webkit-scrollbar, .nav-tabs::-webkit-scrollbar { display: none; }
+        .badge {
+            padding: 8px 14px;
+            border-color: var(--border-color);
+            background: var(--card-bg);
+            color: var(--subtext-color);
+            transition: .2s;
+        }
+        .badge:hover { background: var(--accent-soft); color: var(--accent); border-color: rgba(255, 53, 72, .35); }
+        .container { max-width: 1440px; padding: 28px 25px 48px; }
+        .hero {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            min-height: 190px;
+            overflow: hidden;
+            padding: clamp(24px, 5vw, 48px);
+            margin-bottom: 36px;
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            background: linear-gradient(115deg, rgba(255, 53, 72, .17), rgba(91, 67, 170, .1) 48%, var(--card-bg) 100%);
+        }
+        .hero::after {
+            content: "▶";
+            position: absolute;
+            right: 7%;
+            top: 50%;
+            transform: translateY(-50%) rotate(-12deg);
+            color: rgba(255, 255, 255, .045);
+            font-size: clamp(100px, 20vw, 230px);
+            pointer-events: none;
+        }
+        .hero-copy { position: relative; z-index: 1; max-width: 650px; }
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 13px;
+            color: #ff7481;
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+        .hero h1 { margin-bottom: 10px; font-size: clamp(1.7rem, 4vw, 2.65rem); line-height: 1.12; letter-spacing: -.045em; }
+        .hero p { max-width: 520px; color: var(--subtext-color); line-height: 1.65; }
+        .hero-mark {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            flex: 0 0 76px;
+            width: 76px;
+            height: 76px;
+            color: #fff;
+            background: linear-gradient(135deg, #ff3548, #ff6a42);
+            border-radius: 24px;
+            box-shadow: 0 14px 40px rgba(255, 53, 72, .25);
+            font-size: 1.8rem;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 18px;
+            font-size: clamp(1.15rem, 2vw, 1.45rem);
+            letter-spacing: -.025em;
+        }
+        .video-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 22px; }
+        .video-card, .short-card {
+            border-radius: 16px;
+            box-shadow: 0 7px 24px rgba(0, 0, 0, .1);
+        }
+        .video-card:hover, .short-card:hover { transform: translateY(-5px); border-color: rgba(255, 53, 72, .32); }
+        .video-container, .short-container { overflow: hidden; }
+        .video-container iframe, .short-container iframe { transition: transform .3s; }
+        .video-info { padding: 14px; gap: 10px; }
+        .video-info h3 { line-height: 1.45; }
+        .short-info { padding: 12px; }
+        .card-actions { border-top: 1px solid var(--border-color); padding-top: 8px; }
+        .action-icon-btn { color: var(--subtext-color); padding: 7px 9px; transition: .2s; }
+        .action-icon-btn:hover { color: var(--accent); background: var(--accent-soft); }
+        .action-icon-btn.liked { color: var(--accent); }
+        .message {
+            grid-column: 1 / -1;
+            padding: 42px 20px;
+            color: var(--subtext-color);
+            background: var(--card-bg);
+            border: 1px dashed var(--card-border);
+            border-radius: 16px;
+        }
+        footer { margin-top: auto; padding: 24px 16px; }
+        footer strong { color: var(--text-color); }
+        @media (max-width: 760px) {
+            header { flex-wrap: wrap; gap: 12px; padding: 12px 18px; }
+            .logo { font-size: 1.12rem; }
+            .header-actions { margin-left: auto; }
+            .search-area { order: 3; max-width: none; flex: 1 0 100%; margin: 0; }
+            .nav-tabs { position: relative; top: auto; gap: 6px; padding: 10px 18px; }
+            .tab-btn { padding: 8px 11px; font-size: .86rem; }
+            .categories { padding: 16px 18px 2px; }
+            .container { padding: 20px 18px 38px; }
+            .hero { min-height: 175px; margin-bottom: 28px; border-radius: 20px; }
+            .hero-mark { flex-basis: 58px; width: 58px; height: 58px; border-radius: 18px; }
+            .video-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+            .shorts-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 14px; }
+        }
+        @media (max-width: 480px) {
+            .logo { font-size: 1rem; }
+            .theme-toggle { width: 38px; height: 38px; }
+            .nav-tabs { gap: 5px; }
+            .tab-btn { padding: 8px 10px; font-size: .8rem; }
+            .hero { padding: 24px 20px; }
+            .hero-mark { display: none; }
+            .hero::after { right: -2%; }
+            .video-grid { grid-template-columns: 1fr; }
+            .shorts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="switchTab('home')"><span>▶</span> ShivaHub</div>
+        <div class="search-area">
+            <div class="search-box">
+                <input type="text" id="searchQuery" placeholder="Search videos or shorts..." onkeypress="handleKey(event)">
+            </div>
+            <button class="search-btn" onclick="executeSearch()">Search</button>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+        </div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" id="homeTabBtn" onclick="switchTab('home')">🏠 Home Feed</button>
+        <button class="tab-btn" id="shortsTabBtn" onclick="switchTab('shorts')">⚡ Shorts</button>
+        <button class="tab-btn" id="favTabBtn" onclick="switchTab('favorites')">⭐ Favorites (<span id="favCount">0</span>)</button>
+        <button class="tab-btn" id="historyTabBtn" onclick="switchTab('history')">🕒 Watch History</button>
+    </div>
+
+    <!-- Quick Filter Categories -->
+    <div class="categories" id="categoryBar">
+        <div class="badge" onclick="filterByCategory('Trending Music')">🎵 Music</div>
+        <div class="badge" onclick="filterByCategory('Gaming Gameplay')">🎮 Gaming</div>
+        <div class="badge" onclick="filterByCategory('Lofi Beats Chill')">🎧 Lofi Beats</div>
+        <div class="badge" onclick="filterByCategory('Tech Gadgets Review')">💻 Tech</div>
+        <div class="badge" onclick="filterByCategory('Comedy Standup')">😂 Comedy</div>
+        <div class="badge" onclick="filterByCategory('Bollywood Movie Trailers')">🎬 Trailers</div>
+        <div class="badge" onclick="filterByCategory('Nature Relaxation 4K')">🌿 Nature</div>
+    </div>
+
+    <div class="container">
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="hero-kicker">● YOUR PERSONAL VIDEO SPACE</div>
+                <h1>Discover something<br>worth watching.</h1>
+                <p>Search videos, explore Shorts, and keep your favorites together — all in one place.</p>
+            </div>
+            <div class="hero-mark" aria-hidden="true">▶</div>
+        </section>
+        
+        <!-- Home View -->
+        <div id="homeView">
+            <div class="section-title" id="homeTitle">🔥 Trending Feed</div>
+            <div class="video-grid" id="videoGrid"></div>
+        </div>
+
+        <!-- Shorts View -->
+        <div id="shortsView" style="display: none;">
+            <div class="section-title">⚡ Viral Shorts Feed</div>
+            <div class="shorts-grid" id="shortsGrid"></div>
+        </div>
+
+        <!-- Favorites View -->
+        <div id="favoritesView" style="display: none;">
+            <div class="section-title">⭐ Your Favorite Videos</div>
+            <div class="video-grid" id="favoritesGrid"></div>
+        </div>
+
+        <!-- History View -->
+        <div id="historyView" style="display: none;">
+            <div class="section-title">🕒 Recently Watched History</div>
+            <div class="video-grid" id="historyGrid"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>ShivaHub <span aria-hidden="true">·</span> Your personal video discovery space</p>
+    </footer>
+
+    <script>
+        const API_KEY = "YOUR_YOUTUBE_API_KEY"; // Add your YouTube Data API v3 key here.
+        let currentMode = 'home';
+        
+        // Load saved favorites & history from localStorage
+        let favorites = JSON.parse(localStorage.getItem("shivahub_favs")) || [];
+        let history = JSON.parse(localStorage.getItem("shivahub_history")) || [];
+        
+        updateFavCount();
+
+        function toggleTheme() {
+            let html = document.documentElement;
+            let btn = document.getElementById("themeToggleBtn");
+            if(html.getAttribute("data-theme") === "dark") {
+                html.setAttribute("data-theme", "light");
+                btn.innerText = "☀️";
+            } else {
+                html.setAttribute("data-theme", "dark");
+                btn.innerText = "🌙";
+            }
+        }
+
+        function switchTab(tab) {
+            currentMode = tab;
+            ['homeTabBtn', 'shortsTabBtn', 'favTabBtn', 'historyTabBtn'].forEach(id => {
+                document.getElementById(id).classList.remove("active");
+            });
+            ['homeView', 'shortsView', 'favoritesView', 'historyView'].forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+            document.getElementById("categoryBar").style.display = (tab === 'home' || tab === 'shorts') ? "flex" : "none";
+
+            if(tab === 'home') {
+                document.getElementById("homeTabBtn").classList.add("active");
+                document.getElementById("homeView").style.display = "block";
+                fetchHomeVideos();
+            } else if(tab === 'shorts') {
+                document.getElementById("shortsTabBtn").classList.add("active");
+                document.getElementById("shortsView").style.display = "block";
+                fetchShortsVideos();
+            } else if(tab === 'favorites') {
+                document.getElementById("favTabBtn").classList.add("active");
+                document.getElementById("favoritesView").style.display = "block";
+                renderFavorites();
+            } else if(tab === 'history') {
+                document.getElementById("historyTabBtn").classList.add("active");
+                document.getElementById("historyView").style.display = "block";
+                renderHistory();
+            }
+        }
+
+        function filterByCategory(cat) {
+            document.getElementById("searchQuery").value = cat;
+            executeSearch();
+        }
+
+        function showApiKeyMessage(grid) {
+            if(API_KEY === "YOUR_YOUTUBE_API_KEY") {
+                grid.innerHTML = "<div class='message'>Add your YouTube Data API v3 key in the API_KEY setting to load videos.</div>";
+                return true;
+            }
+            return false;
+        }
+
+        function showRequestError(grid, message) {
+            let errorMessage = document.createElement("div");
+            errorMessage.className = "message";
+            errorMessage.textContent = message;
+            grid.replaceChildren(errorMessage);
+        }
+
+        async function fetchHomeVideos() {
+            let query = document.getElementById("searchQuery").value || "trending music technology trailers";
+            let grid = document.getElementById("videoGrid");
+            document.getElementById("homeTitle").innerText = `🔍 Results for: "${query}"`;
+            if(showApiKeyMessage(grid)) return;
+            grid.innerHTML = "<div class='message'>Videos load ho rahe hain...</div>";
+
+            let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
+
+            try {
+                let res = await fetch(url);
+                let data = await res.json();
+                if(!res.ok) {
+                    throw new Error(data.error?.message || "YouTube API request failed.");
+                }
+                if(Array.isArray(data.items)) {
+                    grid.innerHTML = "";
+                    data.items.forEach(item => {
+                        let videoId = item.id.videoId;
+                        let title = item.snippet.title;
+                        if(!videoId || !title) return;
+                        addToHistory(videoId, title);
+                        grid.appendChild(createVideoCard(videoId, title));
+                    });
+                    if(!data.items.length) showRequestError(grid, "No videos found. Try another search.");
+                } else {
+                    showRequestError(grid, "No videos could be loaded. Check your API key and quota.");
+                }
+            } catch(error) {
+                showRequestError(grid, error.message || "Network error. Check your connection.");
+            }
+        }
+
+        async function fetchShortsVideos() {
+            let query = document.getElementById("searchQuery").value;
+            let searchQuery = query ? query + " shorts" : "trending shorts #shorts";
+            let grid = document.getElementById("shortsGrid");
+            if(showApiKeyMessage(grid)) return;
+            grid.innerHTML = "<div class='message'>Shorts load ho rahe hain...</div>";
+
+            let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${encodeURIComponent(searchQuery)}&type=video&key=${API_KEY}`;
+
+            try {
+                let res = await fetch(url);
+                let data = await res.json();
+                if(!res.ok) {
+                    throw new Error(data.error?.message || "YouTube API request failed.");
+                }
+                if(Array.isArray(data.items)) {
+                    grid.innerHTML = "";
+                    data.items.forEach(item => {
+                        let videoId = item.id.videoId;
+                        let title = item.snippet.title;
+                        if(!videoId || !title) return;
+                        addToHistory(videoId, title);
+                        grid.appendChild(createShortCard(videoId, title));
+                    });
+                    if(!data.items.length) showRequestError(grid, "No Shorts found. Try another search.");
+                } else {
+                    showRequestError(grid, "Shorts could not be loaded. Check your API key and quota.");
+                }
+            } catch(error) {
+                showRequestError(grid, error.message || "Network error. Check your connection.");
+            }
+        }
+
+        function createVideoCard(videoId, title) {
+            return createVideoCardElement(videoId, title, false);
+        }
+
+        function createShortCard(videoId, title) {
+            return createVideoCardElement(videoId, title, true);
+        }
+
+        function createVideoCardElement(videoId, title, isShort) {
+            let isFav = favorites.some(v => v.id === videoId);
+            let card = document.createElement("div");
+            card.className = isShort ? "short-card" : "video-card";
+
+            let player = document.createElement("div");
+            player.className = isShort ? "short-container" : "video-container";
+            let iframe = document.createElement("iframe");
+            iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`;
+            iframe.title = title;
+            iframe.loading = "lazy";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            iframe.allowFullscreen = true;
+            player.appendChild(iframe);
+
+            let info = document.createElement("div");
+            info.className = isShort ? "short-info" : "video-info";
+            let heading = document.createElement("h3");
+            heading.textContent = title;
+            let actions = document.createElement("div");
+            actions.className = "card-actions";
+
+            let favoriteButton = document.createElement("button");
+            favoriteButton.className = `action-icon-btn${isFav ? " liked" : ""}`;
+            favoriteButton.textContent = isFav ? "⭐ Saved" : "☆ Save";
+            favoriteButton.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
+            favoriteButton.addEventListener("click", () => toggleFavorite(videoId, title, favoriteButton));
+
+            let shareButton = document.createElement("button");
+            shareButton.className = "action-icon-btn";
+            shareButton.textContent = "🔗 Share";
+            shareButton.addEventListener("click", () => shareVideo(videoId));
+
+            actions.append(favoriteButton, shareButton);
+            info.append(heading, actions);
+            card.append(player, info);
+            return card;
+        }
+
+        function toggleFavorite(id, title, button) {
+            let index = favorites.findIndex(v => v.id === id);
+            if(index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push({ id, title });
+            }
+            localStorage.setItem("shivahub_favs", JSON.stringify(favorites));
+            updateFavCount();
+            if(currentMode === 'favorites') renderFavorites();
+            else if(button) {
+                let isFavorite = index === -1;
+                button.classList.toggle("liked", isFavorite);
+                button.textContent = isFavorite ? "⭐ Saved" : "☆ Save";
+                button.setAttribute("aria-label", isFavorite ? "Remove from favorites" : "Add to favorites");
+            }
+        }
+
+        function renderFavorites() {
+            let grid = document.getElementById("favoritesGrid");
+            if(favorites.length === 0) {
+                grid.innerHTML = "<div class='message'>Aapne koi video favorite nahi kiya hai.</div>";
+                return;
+            }
+            grid.innerHTML = "";
+            favorites.forEach(v => {
+                grid.appendChild(createVideoCard(v.id, v.title));
+            });
+        }
+
+        function addToHistory(id, title) {
+            history = history.filter(v => v.id !== id);
+            history.unshift({ id, title });
+            if(history.length > 20) history.pop();
+            localStorage.setItem("shivahub_history", JSON.stringify(history));
+        }
+
+        function renderHistory() {
+            let grid = document.getElementById("historyGrid");
+            if(history.length === 0) {
+                grid.innerHTML = "<div class='message'>Aapki watch history khali hai.</div>";
+                return;
+            }
+            grid.innerHTML = "";
+            history.forEach(v => {
+                grid.appendChild(createVideoCard(v.id, v.title));
+            });
+        }
+
+        function updateFavCount() {
+            document.getElementById("favCount").innerText = favorites.length;
+        }
+
+        async function shareVideo(videoId) {
+            let link = `https://youtu.be/${videoId}`;
+            try {
+                await navigator.clipboard.writeText(link);
+                alert("Video link copied to clipboard: " + link);
+            } catch(error) {
+                window.prompt("Copy this video link:", link);
+            }
+        }
+
+        function executeSearch() {
+            if(currentMode === 'home') fetchHomeVideos();
+            else if(currentMode === 'shorts') fetchShortsVideos();
+        }
+
+        function handleKey(e) {
+            if(e.key === 'Enter') executeSearch();
+        }
+
+        window.onload = () => {
+            fetchHomeVideos();
+        };
+    </script>
+</body>
+</html>
