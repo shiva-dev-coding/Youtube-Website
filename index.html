@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MKHJ74FJ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShivaHub | Video Discovery</title>
+    <meta name="theme-color" content="#0f0f0f">
+    <link rel="manifest" href="./manifest.webmanifest">
     <style>
         :root {
             --bg-color: #0f0f0f;
@@ -60,10 +56,44 @@
         .logo span { background: #ff0000; color: white; padding: 2px 8px; border-radius: 4px; }
 
         .search-area {
+            position: relative;
             display: flex;
             width: 100%;
             max-width: 500px;
             margin: 0 15px;
+        }
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            z-index: 120;
+            display: none;
+            max-height: min(60vh, 360px);
+            overflow-y: auto;
+            padding: 6px;
+            color: var(--text-color);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
+        }
+        .search-suggestions.is-visible { display: block; }
+        .search-suggestion {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            color: inherit;
+            background: transparent;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .search-suggestion:hover, .search-suggestion:focus-visible {
+            color: var(--text-color);
+            background: var(--tab-bg);
+            outline: none;
         }
         .search-box {
             display: flex;
@@ -82,6 +112,22 @@
             outline: none;
             font-size: 1rem;
         }
+        .search-back {
+            display: none;
+            flex: 0 0 auto;
+            min-height: 38px;
+            padding: 6px 12px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: .85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .search-back:hover { color: var(--accent); }
+        .search-back.is-visible { display: grid; place-items: center; }
         .search-btn {
             background: var(--tab-bg);
             border: 1px solid var(--input-border);
@@ -95,6 +141,18 @@
         .search-btn:hover { background: #ff0000; color: white; border-color: #ff0000; }
 
         .header-actions { display: flex; gap: 10px; align-items: center; }
+        .install-app-button {
+            min-height: 40px;
+            padding: 0 12px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .install-app-button:hover { border-color: var(--accent); }
         .theme-toggle {
             background: var(--tab-bg);
             border: none;
@@ -583,6 +641,14 @@
         .watch-details h2 { margin: 0 0 16px; font-size: clamp(1.1rem, 2.5vw, 1.55rem); line-height: 1.4; }
         .watch-meta { margin: -8px 0 16px; color: #a7b0aa; font-size: .88rem; }
         .watch-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .sleep-timer-select {
+            min-height: 40px;
+            padding: 0 10px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+        }
         .watch-action {
             min-height: 40px;
             padding: 9px 15px;
@@ -598,6 +664,150 @@
         .watch-action.liked { color: #ff6876; background: rgba(255, 53, 72, .12); }
         .watch-action.youtube { background: #e60000; border-color: #e60000; }
         .watch-action.youtube:hover { background: #c90000; }
+        .watch-minimize {
+            position: absolute;
+            z-index: 2;
+            top: 14px;
+            right: 122px;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            color: #fff;
+            background: rgba(0, 0, 0, .68);
+            border: 1px solid rgba(255, 255, 255, .24);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.15rem;
+        }
+        .watch-minimize:hover { background: rgba(230, 189, 112, .92); color: #172019; }
+        .watch-dialog.is-minimized {
+            display: block;
+            padding: 0;
+            background: transparent;
+            pointer-events: none;
+            backdrop-filter: none;
+        }
+        .watch-dialog.is-minimized .watch-panel {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: min(360px, calc(100vw - 28px));
+            max-height: none;
+            overflow: hidden;
+            border-radius: 14px;
+            pointer-events: auto;
+        }
+        .watch-dialog.is-minimized .watch-player {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin: 0;
+        }
+        .watch-dialog.is-minimized .watch-panel.is-short .watch-player {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+        }
+        .watch-dialog.is-minimized .watch-details { display: none; }
+        .watch-dialog.is-minimized .watch-fullscreen,
+        .watch-dialog.is-minimized .watch-minimize,
+        .watch-dialog.is-minimized .watch-close { top: 8px; width: 34px; height: 34px; }
+        .watch-dialog.is-minimized .watch-close { right: 8px; }
+        .watch-dialog.is-minimized .watch-minimize { right: 48px; }
+        .watch-dialog.is-minimized .watch-fullscreen { right: 88px; }
+        .playlist-create {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0 0 24px;
+        }
+        .playlist-create input, .playlist-select {
+            min-height: 40px;
+            padding: 8px 12px;
+            color: var(--text-color);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+        }
+        .playlist-create input { width: min(320px, 100%); }
+        .playlist-create button, .playlist-heading button, .playlist-add-button, .playlist-remove-video, .playlist-cover-button {
+            min-height: 38px;
+            padding: 8px 13px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .playlist-create button:hover, .playlist-heading button:hover, .playlist-add-button:hover,
+        .playlist-remove-video:hover, .playlist-cover-button:hover { color: var(--accent); border-color: var(--accent); }
+        .playlist-section { margin: 0 0 34px; }
+        .playlist-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .playlist-heading h3 { font-size: 1.08rem; }
+        .playlist-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 5px; }
+        .playlist-select { min-height: 34px; max-width: 180px; padding: 5px 8px; font-size: .78rem; }
+        .playlist-add-button, .playlist-remove-video, .playlist-cover-button { min-height: 34px; padding: 5px 9px; font-size: .78rem; }
+        .skeleton-card { overflow: hidden; border-radius: 14px; }
+        .skeleton-block {
+            position: relative;
+            overflow: hidden;
+            background: var(--tab-bg);
+            border-radius: 8px;
+        }
+        .skeleton-block::after {
+            position: absolute;
+            inset: 0;
+            content: "";
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+            animation: skeleton-shimmer 1.4s infinite;
+        }
+        .skeleton-thumbnail { aspect-ratio: 16 / 9; border-radius: 14px; }
+        .skeleton-line { height: 13px; margin-top: 12px; }
+        .skeleton-line.short { width: 62%; }
+        @keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+        .view-transition { animation: view-enter .22s ease-out; }
+        @keyframes view-enter { from { opacity: .35; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+        .offline-banner, .site-toast {
+            position: fixed;
+            left: 50%;
+            z-index: 1200;
+            transform: translateX(-50%);
+            padding: 11px 16px;
+            color: #fff;
+            background: #252a32;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.3);
+            text-align: center;
+        }
+        .offline-banner { top: 16px; }
+        .offline-banner[hidden], .site-toast[hidden] { display: none; }
+        .site-toast { bottom: 24px; }
+        .back-to-top {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 95;
+            display: none;
+            width: 46px;
+            height: 46px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(0,0,0,.22);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .back-to-top.is-visible { display: grid; place-items: center; }
+        @media (max-width: 600px) {
+            .watch-minimize { top: calc(env(safe-area-inset-top) + 10px); right: 114px; }
+            .watch-dialog.is-minimized .watch-panel { right: 14px; bottom: 14px; }
+            .back-to-top { right: 16px; bottom: 16px; }
+        }
         @media (max-width: 600px) {
             .watch-dialog { align-items: flex-start; padding: 0; background: #08090c; }
             .watch-panel {
@@ -1291,6 +1501,354 @@
             }
             #homeView.is-search-results .video-info { padding-top: 0; }
         }
+        .watch-dialog.is-minimized .watch-panel,
+        .watch-dialog.is-minimized .watch-panel.is-short {
+            width: min(360px, calc(100vw - 28px));
+            min-height: 0;
+            max-height: none;
+            height: auto;
+        }
+        .watch-dialog.is-minimized .watch-player,
+        .watch-dialog.is-minimized .watch-player.is-short {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            margin: 0;
+            aspect-ratio: 16 / 9;
+        }
+        .watch-dialog.is-minimized ~ .back-to-top { bottom: 410px; }
+        @media (max-width: 600px) {
+            .watch-dialog.is-minimized ~ .back-to-top { bottom: 245px; }
+        }
+        .tab-btn.active {
+            color: var(--tab-hover-color);
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(230, 189, 112, .32), inset 0 1px 0 rgba(255, 255, 255, .18);
+        }
+        .tab-btn.active:hover { color: var(--tab-hover-color); background: var(--accent); }
+        .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        :root {
+            color-scheme: dark;
+            --bg-color: #0d0f12;
+            --text-color: #f5f6f8;
+            --subtext-color: #a3aab5;
+            --header-bg: rgba(17, 19, 24, .97);
+            --border-color: rgba(226, 232, 240, .1);
+            --card-bg: #171a20;
+            --card-border: rgba(226, 232, 240, .1);
+            --input-bg: #101216;
+            --input-border: rgba(226, 232, 240, .16);
+            --tab-bg: #20242c;
+            --tab-hover: #ed3448;
+            --tab-hover-color: #fff;
+            --accent: #f04458;
+            --accent-soft: rgba(240, 68, 88, .1);
+            --accent-glow: rgba(240, 52, 74, .28);
+            --surface-raised: #1d2027;
+        }
+        [data-theme="light"] {
+            color-scheme: light;
+            --bg-color: #f3f5f8;
+            --text-color: #252a33;
+            --subtext-color: #626b78;
+            --header-bg: rgba(255, 255, 255, .97);
+            --border-color: rgba(43, 54, 69, .12);
+            --card-bg: #fff;
+            --card-border: rgba(43, 54, 69, .12);
+            --input-bg: #fff;
+            --input-border: rgba(43, 54, 69, .18);
+            --tab-bg: #e8ebf0;
+            --tab-hover: #2854b8;
+            --tab-hover-color: #fff;
+            --accent: #3568c8;
+            --accent-soft: rgba(53, 104, 200, .09);
+            --accent-glow: rgba(53, 104, 200, .18);
+            --surface-raised: #f7f8fa;
+        }
+        body {
+            background:
+                radial-gradient(ellipse at 88% 0%, rgba(128, 142, 164, .07), transparent 34%),
+                var(--bg-color);
+            transition: background-color .25s, color .25s;
+        }
+        header, .nav-tabs { background-color: var(--header-bg); }
+        header { border-bottom-color: var(--border-color); }
+        .logo span, .search-btn {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .logo span { box-shadow: 0 5px 20px var(--accent-glow); }
+        .search-btn:hover { background: var(--tab-hover); border-color: var(--tab-hover); }
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+        .theme-toggle, .language-select { border: 1px solid var(--border-color); }
+        .theme-toggle:hover, .language-select:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 5px 22px rgba(15, 23, 42, .07);
+        }
+        .tab-btn { border: 1px solid transparent; }
+        .tab-btn.active {
+            color: #fff;
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-soft), 0 5px 20px var(--accent-glow);
+        }
+        .tab-btn.active:hover { color: #fff; background: var(--tab-hover); }
+        .tab-btn:hover:not(.active) {
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-color: var(--card-border);
+        }
+        .categories { scrollbar-color: var(--accent) transparent; }
+        .badge { border-color: var(--card-border); }
+        .badge:hover {
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+        .hero {
+            border-color: var(--card-border);
+            background: linear-gradient(118deg, var(--surface-raised), var(--card-bg) 72%);
+            box-shadow: 0 18px 48px rgba(15, 23, 42, .08);
+            border-inline-start: 3px solid var(--accent);
+        }
+        .hero-kicker { color: var(--accent); }
+        .section-title { color: var(--text-color); }
+        .video-card, .short-card {
+            padding: 8px;
+            border: 1px solid transparent;
+            border-radius: 16px;
+            background: var(--card-bg);
+            box-shadow: 0 8px 26px rgba(15, 23, 42, .09);
+            transition: transform .2s, border-color .2s, box-shadow .2s, background-color .2s;
+        }
+        .video-card:hover, .short-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 30px var(--accent-glow);
+        }
+        .video-card.is-selected, .short-card.is-selected {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent), 0 8px 26px var(--accent-glow);
+        }
+        .video-card.is-selected .video-container,
+        .short-card.is-selected .short-container {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-soft), 0 0 18px var(--accent-glow);
+        }
+        #homeView.is-search-results .video-card.is-selected {
+            padding: 10px;
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+            background: var(--accent-soft);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        .video-card:focus-visible, .short-card:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .video-card, .short-card {
+                cursor: pointer;
+                transition: transform .22s ease, border-color .22s ease,
+                    box-shadow .22s ease, background-color .22s ease;
+            }
+            .video-card:hover, .short-card:hover {
+                transform: translateY(-4px);
+                border-color: var(--accent);
+                background: var(--surface-raised);
+                box-shadow: 0 0 0 1px var(--accent-soft), 0 12px 30px var(--accent-glow);
+                position: relative;
+                z-index: 1;
+            }
+            .video-card:hover .video-container,
+            .short-card:hover .short-container {
+                border-color: var(--accent);
+                box-shadow: 0 0 16px var(--accent-glow);
+            }
+            .video-card:hover .video-preview img,
+            .short-card:hover .video-preview img {
+                transform: scale(1.035);
+            }
+            .video-card:hover .preview-play,
+            .short-card:hover .preview-play {
+                box-shadow: 0 0 22px var(--accent-glow);
+            }
+        }
+        .video-container, .short-container {
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+        }
+        #homeView.is-search-results .video-card:hover {
+            transform: translateX(4px);
+            background: var(--surface-raised);
+        }
+        .preview-play {
+            color: #fff;
+            background: var(--accent);
+        }
+        .video-preview:hover .preview-play { background: var(--tab-hover); }
+        .video-info h3, .short-info h3 { color: var(--text-color); }
+        .video-meta, .video-description { color: var(--subtext-color); }
+        .action-icon-btn { color: var(--subtext-color); }
+        .action-icon-btn:hover { color: var(--accent); background: var(--accent-soft); }
+        .action-icon-btn.liked { color: var(--accent); }
+        .search-suggestions {
+            border-color: var(--card-border);
+            box-shadow: 0 14px 36px rgba(15, 23, 42, .16);
+        }
+        .search-suggestion:hover, .search-suggestion:focus-visible {
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .search-back { border-color: var(--card-border); }
+        .search-back:hover { color: var(--accent); border-color: var(--accent); }
+        .playlist-create input:focus, .playlist-select:focus {
+            border-color: var(--accent);
+            outline: 3px solid var(--accent-soft);
+        }
+        .playlist-create button, .playlist-heading button, .playlist-add-button, .playlist-remove-video, .playlist-cover-button {
+            border-color: var(--card-border);
+            background: var(--surface-raised);
+        }
+        .playlist-create button:hover, .playlist-heading button:hover, .playlist-add-button:hover,
+        .playlist-remove-video:hover, .playlist-cover-button:hover { color: var(--accent); border-color: var(--accent); }
+        footer { border-top-color: var(--border-color); }
+        [data-theme="light"] .hero::after { color: rgba(43, 54, 69, .06); }
+        [data-theme="light"] .watch-dialog { background: rgba(21, 28, 38, .48); }
+        .personal-dashboard { margin: 0 0 28px; }
+        .dashboard-heading, .dashboard-shelf-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .dashboard-heading { margin: 0 0 18px; }
+        .dashboard-heading h2 { font-size: clamp(1.05rem, 2vw, 1.35rem); }
+        .dashboard-shelf { margin: 0 0 24px; }
+        .dashboard-shelf-heading { margin: 0 0 12px; }
+        .dashboard-shelf-heading h3 { font-size: 1rem; }
+        .dashboard-shelf-track {
+            display: grid;
+            grid-auto-columns: minmax(230px, 280px);
+            grid-auto-flow: column;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 3px 3px 12px;
+            scrollbar-color: var(--accent) transparent;
+        }
+        .dashboard-shelf-track .video-card { min-width: 0; }
+        .dashboard-shelf-track .playlist-select { max-width: 120px; }
+        .dashboard-shelf-track .action-icon-btn { font-size: .75rem; }
+        .dashboard-action, .dashboard-random, .library-tools button, .playlist-tools button,
+        .playlist-import {
+            min-height: 38px;
+            padding: 8px 12px;
+            color: var(--text-color);
+            background: var(--surface-raised);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .dashboard-action:hover, .dashboard-random:hover, .library-tools button:hover,
+        .playlist-tools button:hover, .playlist-import:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        .library-tools, .playlist-tools {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 18px;
+        }
+        .library-tools input, .playlist-tools input, .playlist-description-input {
+            min-height: 38px;
+            padding: 8px 10px;
+            color: var(--text-color);
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 9px;
+        }
+        .library-tools input[type="search"] { flex: 1 1 220px; }
+        .library-tools button:disabled { opacity: .5; cursor: not-allowed; }
+        .history-remove-button {
+            min-height: 34px;
+            padding: 5px 9px;
+            color: var(--subtext-color);
+            background: transparent;
+            border: 1px solid var(--card-border);
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: .78rem;
+        }
+        .history-remove-button:hover { color: var(--accent); border-color: var(--accent); }
+        .playlist-import { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 22px; }
+        .playlist-import input { max-width: 220px; }
+        .playlist-heading { flex-wrap: wrap; }
+        .playlist-heading p { flex: 1 0 100%; color: var(--subtext-color); }
+        .playlist-tools { margin-top: 8px; }
+        .playlist-cover {
+            width: 100%;
+            max-height: 220px;
+            object-fit: cover;
+            margin: 0 0 12px;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+        }
+        .playlist-card[draggable="true"] { cursor: grab; }
+        .playlist-card.is-dragging { opacity: .45; }
+        .watch-dialog.is-theater { padding: 12px; background: rgba(0,0,0,.94); }
+        .watch-dialog.is-theater .watch-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            align-items: center;
+            width: 100%;
+            height: calc(100dvh - 24px);
+            max-height: none;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .watch-dialog.is-theater .watch-player { width: 100%; }
+        .watch-dialog.is-theater .watch-details { max-height: 100%; overflow-y: auto; }
+        .watch-dialog.is-theater.is-minimized .watch-panel { display: block; }
+        .watch-theater {
+            position: absolute;
+            z-index: 2;
+            top: 14px;
+            right: 176px;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            color: #fff;
+            background: rgba(0, 0, 0, .68);
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .watch-theater:hover { background: var(--accent); }
+        @media (max-width: 850px) {
+            .watch-dialog.is-theater .watch-panel { display: block; height: auto; max-height: 96dvh; overflow-y: auto; }
+            .watch-dialog.is-theater .watch-details { max-height: none; }
+        }
+        @media (max-width: 600px) {
+            .dashboard-shelf-track { grid-auto-columns: minmax(220px, 82vw); }
+            .watch-dialog.is-theater { padding: 0; }
+            .watch-dialog.is-theater .watch-panel { width: 100%; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; }
+            .watch-theater { top: calc(env(safe-area-inset-top) + 10px); right: 166px; }
+        }
+        #homeView.is-search-results #personalDashboard { display: none; }
+        @media (prefers-reduced-motion: reduce) {
+            body, .video-card, .short-card { transition: none; }
+        }
     </style>
 </head>
 <body>
@@ -1299,8 +1857,9 @@
         <div class="logo" onclick="switchTab('home')"><span>▶</span> ShivaHub</div>
         <div class="search-area">
             <div class="search-box">
-                <input type="text" id="searchQuery" placeholder="Search videos or shorts..." onkeypress="handleKey(event)">
+                <input type="text" id="searchQuery" placeholder="Search videos or shorts..." onkeypress="handleKey(event)" onfocus="renderSearchHistorySuggestions()" oninput="renderSearchHistorySuggestions()">
             </div>
+            <div class="search-suggestions" id="searchHistorySuggestions" role="listbox" aria-label="Search suggestions"></div>
             <button class="search-btn" onclick="executeSearch()" aria-label="Search">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg>
             </button>
@@ -1341,6 +1900,7 @@
                 <option value="ru">Русский</option>
                 <option value="de">Deutsch</option>
             </select>
+            <button class="install-app-button" id="installAppButton" type="button">⬇ Install app</button>
             <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
         </div>
     </header>
@@ -1350,6 +1910,8 @@
         <button class="tab-btn" id="shortsTabBtn" onclick="switchTab('shorts')">⚡ Shorts</button>
         <button class="tab-btn" id="favTabBtn" onclick="switchTab('favorites')">⭐ Favorites (0)</button>
         <button class="tab-btn" id="historyTabBtn" onclick="switchTab('history')">🕒 Watch History</button>
+        <button class="tab-btn" id="watchLaterTabBtn" onclick="switchTab('watchLater')">⏱ Watch Later</button>
+        <button class="tab-btn" id="playlistsTabBtn" onclick="switchTab('playlists')">▤ Playlists</button>
     </div>
 
     <!-- Quick Filter Categories -->
@@ -1375,7 +1937,17 @@
         
         <!-- Home View -->
         <div id="homeView">
-            <div class="section-title" id="homeTitle">🔥 Trending Feed</div>
+            <section id="personalDashboard" class="personal-dashboard" aria-label="Personal video dashboard">
+                <div class="dashboard-heading">
+                    <h2 id="dashboardTitle">Your entertainment dashboard</h2>
+                    <button class="dashboard-random" id="randomDiscoveryButton" type="button">🎲 Random discovery</button>
+                </div>
+                <div id="dashboardShelves"></div>
+            </section>
+            <div class="section-title">
+                <button class="search-back" id="searchBackButton" type="button" onclick="goBackFromSearch()" aria-label="Back to Home" title="Back to Home">← Back to Home</button>
+                <span id="homeTitle">🔥 Trending Feed</span>
+            </div>
             <div class="video-grid" id="videoGrid"></div>
         </div>
 
@@ -1395,7 +1967,33 @@
         <!-- History View -->
         <div id="historyView" style="display: none;">
             <div class="section-title" id="historyTitle">🕒 Recently Watched History</div>
+            <div class="library-tools">
+                <input id="historySearchInput" type="search" placeholder="Search watch history" aria-label="Search watch history">
+                <input id="historyDateInput" type="date" aria-label="Filter history by date">
+                <button id="pauseHistoryButton" type="button">Pause history</button>
+                <button id="undoHistoryButton" type="button" disabled>Undo removed</button>
+                <button id="clearHistoryButton" type="button">Clear all</button>
+            </div>
             <div class="video-grid" id="historyGrid"></div>
+        </div>
+
+        <div id="watchLaterView" style="display: none;">
+            <div class="section-title" id="watchLaterTitle">⏱ Watch Later</div>
+            <div class="video-grid" id="watchLaterGrid"></div>
+        </div>
+
+        <div id="playlistsView" style="display: none;">
+            <div class="section-title" id="playlistsTitle">▤ Your Playlists</div>
+            <form class="playlist-create" id="playlistCreateForm">
+                <input id="playlistNameInput" type="text" maxlength="60" required autocomplete="off" placeholder="Playlist name">
+                <input id="playlistDescriptionInput" type="text" maxlength="160" autocomplete="off" placeholder="Description (optional)">
+                <button type="submit" id="createPlaylistButton">Create playlist</button>
+            </form>
+            <label class="playlist-import">
+                <span>Import playlist JSON</span>
+                <input id="playlistImportInput" type="file" accept="application/json,.json">
+            </label>
+            <div id="playlistList"></div>
         </div>
     </div>
 
@@ -1407,6 +2005,8 @@
         <section class="watch-panel" role="dialog" aria-modal="true" aria-labelledby="watchTitle" tabindex="-1">
             <div class="watch-player" id="watchPlayer">
                 <button class="watch-fullscreen" id="watchFullscreen" type="button" aria-label="Enter fullscreen" title="Fullscreen">⛶</button>
+                <button class="watch-minimize" id="watchMinimize" type="button" aria-label="Mini player" title="Mini player">▁</button>
+                <button class="watch-theater" id="watchTheater" type="button" aria-label="Theater mode" title="Theater mode">▭</button>
                 <button class="watch-close" id="watchClose" type="button" aria-label="Close video player">×</button>
             </div>
             <div class="watch-details">
@@ -1415,14 +2015,27 @@
                 <div class="watch-actions">
                     <button class="watch-action" id="watchFavorite" type="button">☆ Save</button>
                     <button class="watch-action" id="watchShare" type="button">🔗 Share</button>
+                    <button class="watch-action" id="watchCopyLink" type="button">⧉ Copy link</button>
+                    <button class="watch-action" id="watchLaterButton" type="button">⏱ Watch later</button>
+                    <button class="watch-action" id="watchAutoplayButton" type="button">Autoplay: Off</button>
+                    <select class="sleep-timer-select" id="sleepTimerSelect" aria-label="Sleep timer">
+                        <option value="0">Sleep timer: Off</option>
+                        <option value="900">15 minutes</option>
+                        <option value="1800">30 minutes</option>
+                        <option value="2700">45 minutes</option>
+                        <option value="3600">60 minutes</option>
+                    </select>
                     <a class="watch-action youtube" id="watchYoutube" href="#" target="_blank" rel="noopener noreferrer">▶ Open on YouTube</a>
                 </div>
             </div>
         </section>
     </div>
+    <div class="offline-banner" id="offlineBanner" role="status" hidden></div>
+    <div class="site-toast" id="siteToast" role="status" aria-live="polite" hidden></div>
+    <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top" title="Back to top">↑</button>
 
     <script>
-        const API_KEY = "AIzaSyDfOsM8pVU9aZ42bMpiH2DnXbFUadXpTmI"; // Paste your YouTube Data API v3 key between the quotes.
+        const API_KEY = ""; // Paste your YouTube Data API v3 key between the quotes.
         const translations = {
             en: {
                 searchPlaceholder: "Search videos or shorts...", selectLanguage: "Select language", search: "Search",
@@ -1440,7 +2053,7 @@
                 loadFailed: "Loading failed. Scroll to retry or start a new search.",
                 detailsFailed: "Views and duration could not be loaded: {error}",
                 save: "☆ Save", saved: "⭐ Saved", share: "🔗 Share", openYoutube: "▶ Open on YouTube",
-                fullscreen: "Fullscreen", close: "Close video player", emptyFavorites: "You haven't saved any videos yet.",
+                fullscreen: "Fullscreen", close: "Close video player", back: "Back to previous results", emptyFavorites: "You haven't saved any videos yet.",
                 emptyHistory: "Your watch history is empty.", searchResults: "🔎 Search results for: \"{query}\"",
                 views: "views", copied: "Video link copied to clipboard: {url}", sharePrompt: "Copy this video link:",
                 removeFavorite: "Remove from favorites",
@@ -1916,42 +2529,118 @@
             translations[code] = { ...translations.en, ...values };
         });
         const translatedLabels = {
-            en: { views: "views", removeFavorite: "Remove from favorites" },
-            hi: { views: "व्यू", removeFavorite: "पसंदीदा से हटाएँ" },
-            es: { views: "visualizaciones", removeFavorite: "Quitar de favoritos" },
-            fr: { views: "vues", removeFavorite: "Retirer des favoris" },
-            pt: { views: "visualizações", removeFavorite: "Remover dos favoritos" },
-            bn: { views: "ভিউ", removeFavorite: "পছন্দের তালিকা থেকে সরান" },
-            ar: { views: "مشاهدة", removeFavorite: "إزالة من المفضلة" },
-            ja: { views: "回視聴", removeFavorite: "お気に入りから削除" },
-            de: { views: "Aufrufe", removeFavorite: "Aus Favoriten entfernen" },
-            as: { views: "দৰ্শন", removeFavorite: "প্ৰিয়ৰ পৰা আঁতৰাওক" },
-            brx: { views: "नायनाय", removeFavorite: "मोजांनिफ्राय बोखार" },
-            doi: { views: "दर्शन", removeFavorite: "पसंदीदा चा कड्डो" },
-            gu: { views: "વ્યૂઝ", removeFavorite: "મનપસંદમાંથી દૂર કરો" },
-            kn: { views: "ವೀಕ್ಷಣೆಗಳು", removeFavorite: "ಮೆಚ್ಚಿನವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ" },
-            ks: { views: "وُچھ", removeFavorite: "پسندیدہ منزٕ کٔڈِو" },
-            kok: { views: "पळोवप", removeFavorite: "आवडत्यांतल्यान काडात" },
-            mai: { views: "बार देखल", removeFavorite: "पसंदीदा सँ हटाउ" },
-            ml: { views: "കാഴ്ചകൾ", removeFavorite: "പ്രിയപ്പെട്ടവയിൽ നിന്ന് നീക്കുക" },
-            mni: { views: "য়েংখিবা", removeFavorite: "নুংঙাইবা মদুগী লৌথোকউ" },
-            mr: { views: "दृश्ये", removeFavorite: "आवडत्यांमधून काढा" },
-            ne: { views: "हेराइ", removeFavorite: "मनपर्नेबाट हटाउनुहोस्" },
-            or: { views: "ଦର୍ଶନ", removeFavorite: "ପସନ୍ଦରୁ ହଟାନ୍ତୁ" },
-            pa: { views: "ਵਿਊਜ਼", removeFavorite: "ਮਨਪਸੰਦ ਵਿੱਚੋਂ ਹਟਾਓ" },
-            sa: { views: "दर्शनानि", removeFavorite: "प्रियसूचीतः निष्कासयतु" },
-            sat: { views: "নেল্", removeFavorite: "পসন্দ রে খান" },
-            sd: { views: "ڏٺل", removeFavorite: "پسنديده مان هٽايو" },
-            ta: { views: "பார்வைகள்", removeFavorite: "விருப்பமானவற்றிலிருந்து நீக்கு" },
-            te: { views: "వీక్షణలు", removeFavorite: "ఇష్టమైన వాటి నుండి తీసివేయండి" },
-            ur: { views: "دیکھے گئے", removeFavorite: "پسندیدہ سے ہٹائیں" },
-            zh: { views: "次观看", removeFavorite: "从收藏中移除" },
-            id: { views: "penayangan", removeFavorite: "Hapus dari favorit" },
-            ko: { views: "회 시청", removeFavorite: "즐겨찾기에서 삭제" },
-            ru: { views: "просмотров", removeFavorite: "Убрать из избранного" }
+            en: { views: "views", removeFavorite: "Remove from favorites", backHome: "Back to Home" },
+            hi: { views: "व्यू", removeFavorite: "पसंदीदा से हटाएँ", backHome: "होम पर वापस जाएँ" },
+            es: { views: "visualizaciones", removeFavorite: "Quitar de favoritos", backHome: "Volver al inicio" },
+            fr: { views: "vues", removeFavorite: "Retirer des favoris", backHome: "Retour à l'accueil" },
+            pt: { views: "visualizações", removeFavorite: "Remover dos favoritos", backHome: "Voltar ao início" },
+            bn: { views: "ভিউ", removeFavorite: "পছন্দের তালিকা থেকে সরান", backHome: "হোমে ফিরে যান" },
+            ar: { views: "مشاهدة", removeFavorite: "إزالة من المفضلة", backHome: "العودة إلى الصفحة الرئيسية" },
+            ja: { views: "回視聴", removeFavorite: "お気に入りから削除", backHome: "ホームに戻る" },
+            de: { views: "Aufrufe", removeFavorite: "Aus Favoriten entfernen", backHome: "Zurück zur Startseite" },
+            as: { views: "দৰ্শন", removeFavorite: "প্ৰিয়ৰ পৰা আঁতৰাওক", backHome: "হোমলৈ উভতি যাওক" },
+            brx: { views: "नायनाय", removeFavorite: "मोजांनिफ्राय बोखार", backHome: "न'आव थांफिन" },
+            doi: { views: "दर्शन", removeFavorite: "पसंदीदा चा कड्डो", backHome: "घर परत जाओ" },
+            gu: { views: "વ્યૂઝ", removeFavorite: "મનપસંદમાંથી દૂર કરો", backHome: "હોમ પર પાછા જાઓ" },
+            kn: { views: "ವೀಕ್ಷಣೆಗಳು", removeFavorite: "ಮೆಚ್ಚಿನವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ", backHome: "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ" },
+            ks: { views: "وُچھ", removeFavorite: "پسندیدہ منزٕ کٔڈِو", backHome: "ہوم پٮ۪ٹھ واپس گٔژھِو" },
+            kok: { views: "पळोवप", removeFavorite: "आवडत्यांतल्यान काडात", backHome: "मुखेल पानार परत वचात" },
+            mai: { views: "बार देखल", removeFavorite: "पसंदीदा सँ हटाउ", backHome: "होम पर लौटू" },
+            ml: { views: "കാഴ്ചകൾ", removeFavorite: "പ്രിയപ്പെട്ടവയിൽ നിന്ന് നീക്കുക", backHome: "ഹോമിലേക്ക് മടങ്ങുക" },
+            mni: { views: "য়েংখিবা", removeFavorite: "নুংঙাইবা মদুগী লৌথোকউ", backHome: "হোমদা হন্না চঙশিনৌ" },
+            mr: { views: "दृश्ये", removeFavorite: "आवडत्यांमधून काढा", backHome: "मुख्यपृष्ठावर परत जा" },
+            ne: { views: "हेराइ", removeFavorite: "मनपर्नेबाट हटाउनुहोस्", backHome: "गृहपृष्ठमा फर्कनुहोस्" },
+            or: { views: "ଦର୍ଶନ", removeFavorite: "ପସନ୍ଦରୁ ହଟାନ୍ତୁ", backHome: "ମୁଖ୍ୟ ପୃଷ୍ଠାକୁ ଫେରନ୍ତୁ" },
+            pa: { views: "ਵਿਊਜ਼", removeFavorite: "ਮਨਪਸੰਦ ਵਿੱਚੋਂ ਹਟਾਓ", backHome: "ਮੁੱਖ ਪੰਨੇ 'ਤੇ ਵਾਪਸ ਜਾਓ" },
+            sa: { views: "दर्शनानि", removeFavorite: "प्रियसूचीतः निष्कासयतु", backHome: "मुख्यपृष्ठं प्रति निवर्तताम्" },
+            sat: { views: "নেল্", removeFavorite: "পসন্দ রে খান", backHome: "হোম রে রুআড়" },
+            sd: { views: "ڏٺل", removeFavorite: "پسنديده مان هٽايو", backHome: "مکيه صفحي ڏانهن واپس وڃو" },
+            ta: { views: "பார்வைகள்", removeFavorite: "விருப்பமானவற்றிலிருந்து நீக்கு", backHome: "முகப்புக்குத் திரும்பு" },
+            te: { views: "వీక్షణలు", removeFavorite: "ఇష్టమైన వాటి నుండి తీసివేయండి", backHome: "హోమ్‌కు తిరిగి వెళ్లండి" },
+            ur: { views: "دیکھے گئے", removeFavorite: "پسندیدہ سے ہٹائیں", backHome: "ہوم پر واپس جائیں" },
+            zh: { views: "次观看", removeFavorite: "从收藏中移除", backHome: "返回首页" },
+            id: { views: "penayangan", removeFavorite: "Hapus dari favorit", backHome: "Kembali ke Beranda" },
+            ko: { views: "회 시청", removeFavorite: "즐겨찾기에서 삭제", backHome: "홈으로 돌아가기" },
+            ru: { views: "просмотров", removeFavorite: "Убрать из избранного", backHome: "Вернуться на главную" }
         };
         Object.entries(translatedLabels).forEach(([code, labels]) => {
             Object.assign(translations[code], labels);
+        });
+        const featureTranslations = {
+            en: {
+                playlists: "Playlists", playlistsTitle: "▤ Your Playlists", playlistName: "Playlist name",
+                createPlaylist: "Create playlist", emptyPlaylists: "No playlists yet. Create one to organize your videos.",
+                emptyPlaylist: "This playlist has no videos yet.",
+                deletePlaylist: "Delete playlist", addToPlaylist: "＋ Playlist", choosePlaylist: "Choose playlist",
+                addedToPlaylist: "Added to playlist", removeFromPlaylist: "Remove", miniPlayer: "Mini player",
+                expandPlayer: "Expand player", copyLink: "⧉ Copy link", linkCopied: "Video link copied.",
+                offline: "You are offline. Check your connection and retry.", retry: "Retry",
+                backToTop: "Back to top", playlistNameExists: "A playlist with that name already exists.",
+                watchLater: "Watch Later", watchLaterTitle: "⏱ Watch Later", watchLaterAction: "⏱ Watch later",
+                removeWatchLater: "Remove from Watch Later", dashboardTitle: "Your entertainment dashboard",
+                recentlyWatched: "Recently Watched", mostWatched: "Most Watched by You", yourFavorites: "Your Favorites",
+                yourPlaylists: "Your Playlists", randomDiscovery: "🎲 Random discovery", continueWatching: "Continue Watching",
+                recentlySearched: "Recently Searched",
+                searchWatchHistory: "Search watch history", pauseHistory: "Pause history",
+                resumeHistory: "Resume history", undoRemoved: "Undo removed", clearHistory: "Clear all history",
+                filterHistoryDate: "Filter by date", historyPaused: "Watch history is paused.",
+                emptyWatchLater: "Your Watch Later list is empty.",
+                noDashboardItems: "Nothing here yet. Videos you watch and save will appear here.",
+                noRandomVideos: "Watch or save a few videos first to get a random pick.",
+                sleepTimer: "Sleep timer", sleepTimerSet: "Sleep timer set for {minutes} minutes.",
+                sleepTimerEnded: "Sleep timer ended. Playback stopped.", appInstalled: "App installed.",
+                installApp: "⬇ Install app",
+                installHelp: "Use your browser menu and choose Install app or Add to Home Screen.",
+                keyboardHelp: "Shortcuts: / search, Ctrl+K search, T theater, M mini player, Esc close."
+            },
+            hi: {
+                playlists: "प्लेलिस्ट", playlistsTitle: "▤ आपकी प्लेलिस्ट", playlistName: "प्लेलिस्ट का नाम",
+                createPlaylist: "प्लेलिस्ट बनाएँ", emptyPlaylists: "अभी कोई प्लेलिस्ट नहीं है। वीडियो व्यवस्थित करने के लिए एक बनाएँ।",
+                emptyPlaylist: "इस प्लेलिस्ट में अभी कोई वीडियो नहीं है।",
+                deletePlaylist: "प्लेलिस्ट हटाएँ", addToPlaylist: "＋ प्लेलिस्ट", choosePlaylist: "प्लेलिस्ट चुनें",
+                addedToPlaylist: "प्लेलिस्ट में जोड़ा गया", removeFromPlaylist: "हटाएँ", miniPlayer: "मिनी प्लेयर",
+                expandPlayer: "प्लेयर बड़ा करें", copyLink: "⧉ लिंक कॉपी करें", linkCopied: "वीडियो लिंक कॉपी हो गया।",
+                offline: "आप ऑफ़लाइन हैं। कनेक्शन जाँचें और फिर कोशिश करें।", retry: "फिर कोशिश करें",
+                backToTop: "ऊपर जाएँ", playlistNameExists: "इस नाम की प्लेलिस्ट पहले से मौजूद है।",
+                watchLater: "बाद में देखें", watchLaterTitle: "⏱ बाद में देखें", watchLaterAction: "⏱ बाद में देखें",
+                removeWatchLater: "बाद में देखें से हटाएँ", dashboardTitle: "आपका मनोरंजन डैशबोर्ड",
+                recentlyWatched: "हाल ही में देखे", mostWatched: "आपके सबसे ज़्यादा देखे गए",
+                yourFavorites: "आपके पसंदीदा", yourPlaylists: "आपकी प्लेलिस्ट", randomDiscovery: "🎲 कुछ नया देखें",
+                continueWatching: "देखना जारी रखें", recentlySearched: "हाल की खोजें",
+                searchWatchHistory: "देखने का इतिहास खोजें", pauseHistory: "इतिहास रोकें", resumeHistory: "इतिहास फिर शुरू करें",
+                undoRemoved: "हटाया हुआ वापस लाएँ", clearHistory: "इतिहास साफ़ करें", filterHistoryDate: "तारीख से छाँटें",
+                historyPaused: "देखने का इतिहास रुका हुआ है।", emptyWatchLater: "बाद में देखने की सूची खाली है।",
+                noDashboardItems: "अभी यहाँ कुछ नहीं है। आपके देखे और सेव किए वीडियो यहाँ दिखेंगे।",
+                noRandomVideos: "रैंडम वीडियो के लिए पहले कुछ वीडियो देखें या सेव करें।",
+                sleepTimer: "स्लीप टाइमर", sleepTimerSet: "{minutes} मिनट का स्लीप टाइमर सेट हुआ।",
+                sleepTimerEnded: "स्लीप टाइमर पूरा हुआ। वीडियो रोक दिया गया।", appInstalled: "ऐप इंस्टॉल हो गया।",
+                installApp: "⬇ ऐप इंस्टॉल करें",
+                installHelp: "ब्राउज़र मेन्यू में जाकर ऐप इंस्टॉल करें या होम स्क्रीन पर जोड़ें चुनें।",
+                keyboardHelp: "शॉर्टकट: / खोजें, Ctrl+K खोजें, T थिएटर, M मिनी प्लेयर, Esc बंद करें।"
+            },
+            es: {
+                playlists: "Listas", playlistsTitle: "▤ Tus listas", playlistName: "Nombre de la lista",
+                createPlaylist: "Crear lista", emptyPlaylists: "Aún no hay listas. Crea una para organizar tus videos.",
+                emptyPlaylist: "Esta lista aún no tiene videos.",
+                deletePlaylist: "Eliminar lista", addToPlaylist: "＋ Lista", choosePlaylist: "Elegir lista",
+                addedToPlaylist: "Añadido a la lista", removeFromPlaylist: "Quitar", miniPlayer: "Minirreproductor",
+                expandPlayer: "Ampliar reproductor", copyLink: "⧉ Copiar enlace", linkCopied: "Enlace copiado.",
+                offline: "No tienes conexión. Comprueba la red e inténtalo de nuevo.", retry: "Reintentar",
+                backToTop: "Volver arriba", playlistNameExists: "Ya existe una lista con ese nombre."
+            },
+            fr: {
+                playlists: "Playlists", playlistsTitle: "▤ Vos playlists", playlistName: "Nom de la playlist",
+                createPlaylist: "Créer une playlist", emptyPlaylists: "Aucune playlist. Créez-en une pour organiser vos vidéos.",
+                emptyPlaylist: "Cette playlist ne contient pas encore de vidéos.",
+                deletePlaylist: "Supprimer la playlist", addToPlaylist: "＋ Playlist", choosePlaylist: "Choisir une playlist",
+                addedToPlaylist: "Ajouté à la playlist", removeFromPlaylist: "Retirer", miniPlayer: "Mini-lecteur",
+                expandPlayer: "Agrandir le lecteur", copyLink: "⧉ Copier le lien", linkCopied: "Lien copié.",
+                offline: "Vous êtes hors ligne. Vérifiez votre connexion et réessayez.", retry: "Réessayer",
+                backToTop: "Retour en haut", playlistNameExists: "Une playlist portant ce nom existe déjà."
+            }
+        };
+        Object.entries(featureTranslations).forEach(([code, values]) => {
+            Object.assign(translations[code], values);
         });
         const languageLocales = {
             en: "en-US", hi: "hi-IN", as: "as-IN", es: "es-ES", fr: "fr-FR", pt: "pt-BR", bn: "bn-BD",
@@ -1963,14 +2652,31 @@
         };
         const savedLanguage = localStorage.getItem("shivahub_language");
         let currentLanguage = Object.prototype.hasOwnProperty.call(translations, savedLanguage) ? savedLanguage : "en";
+        const savedTheme = localStorage.getItem("shivahub_theme");
+        if(savedTheme === "light" || savedTheme === "dark") {
+            document.documentElement.setAttribute("data-theme", savedTheme);
+        }
+        document.getElementById("themeToggleBtn").textContent =
+            document.documentElement.getAttribute("data-theme") === "light" ? "☀️" : "🌙";
         let currentMode = 'home';
         let activeHomeSearch = "";
+        let searchHistory = loadSearchHistory();
+        let playlists = loadPlaylists();
+        let watchLater = loadStoredVideos("shivahub_watch_later");
+        let removedHistory = loadStoredVideos("shivahub_removed_history");
+        let watchHistoryPaused = localStorage.getItem("shivahub_history_paused") === "true";
+        let lastWatchedVideo = loadStoredObject("shivahub_continue_watching");
+        let autoplayEnabled = localStorage.getItem("shivahub_autoplay") !== "false";
         let activeVideo = null;
+        let selectedVideoId = "";
         let lastFocusedElement = null;
+        let toastTimer = 0;
+        let sleepTimerId = 0;
+        let deferredInstallPrompt = null;
         
         // Load saved favorites & history from localStorage
-        let favorites = JSON.parse(localStorage.getItem("shivahub_favs")) || [];
-        let history = JSON.parse(localStorage.getItem("shivahub_history")) || [];
+        let favorites = loadStoredVideos("shivahub_favs");
+        let history = loadStoredVideos("shivahub_history");
         
         updateFavCount();
         applyLanguage();
@@ -2004,9 +2710,37 @@
             searchInput.placeholder = translate("searchPlaceholder");
             const searchButton = document.querySelector(".search-btn");
             searchButton.setAttribute("aria-label", translate("search"));
+            const searchBackButton = document.getElementById("searchBackButton");
+            searchBackButton.setAttribute("aria-label", translate("backHome"));
+            searchBackButton.title = translate("backHome");
+            searchBackButton.textContent = `← ${translate("backHome")}`;
+            document.getElementById("playlistsTabBtn").textContent = `▤ ${translate("playlists")}`;
+            document.getElementById("playlistsTitle").textContent = translate("playlistsTitle");
+            document.getElementById("playlistNameInput").placeholder = translate("playlistName");
+            document.getElementById("createPlaylistButton").textContent = translate("createPlaylist");
+            document.getElementById("watchLaterTabBtn").textContent = `⏱ ${translate("watchLater")}`;
+            document.getElementById("watchLaterTitle").textContent = translate("watchLaterTitle");
+            document.getElementById("dashboardTitle").textContent = translate("dashboardTitle");
+            document.getElementById("randomDiscoveryButton").textContent = translate("randomDiscovery");
+            document.getElementById("historySearchInput").placeholder = translate("searchWatchHistory");
+            document.getElementById("historySearchInput").setAttribute("aria-label", translate("searchWatchHistory"));
+            document.getElementById("historyDateInput").setAttribute("aria-label", translate("filterHistoryDate"));
+            document.getElementById("pauseHistoryButton").textContent =
+                translate(watchHistoryPaused ? "resumeHistory" : "pauseHistory");
+            document.getElementById("undoHistoryButton").textContent = translate("undoRemoved");
+            document.getElementById("clearHistoryButton").textContent = translate("clearHistory");
+            document.getElementById("undoHistoryButton").disabled = !removedHistory.length;
+            document.getElementById("backToTop").title = translate("backToTop");
+            document.getElementById("backToTop").setAttribute("aria-label", translate("backToTop"));
             const themeButton = document.getElementById("themeToggleBtn");
             themeButton.title = translate("theme");
             themeButton.setAttribute("aria-label", translate("theme"));
+            const installButton = document.getElementById("installAppButton");
+            installButton.textContent = translate("installApp");
+            installButton.setAttribute("aria-label", translate("installApp"));
+            const sleepTimer = document.getElementById("sleepTimerSelect");
+            sleepTimer.setAttribute("aria-label", translate("sleepTimer"));
+            sleepTimer.options[0].textContent = `${translate("sleepTimer")}: Off`;
 
             document.getElementById("homeTabBtn").textContent = `🏠 ${translate("home")}`;
             document.getElementById("shortsTabBtn").textContent = `⚡ ${translate("shorts")}`;
@@ -2025,20 +2759,49 @@
             document.getElementById("watchFullscreen").title = translate("fullscreen");
             document.getElementById("watchFullscreen").setAttribute("aria-label", translate("fullscreen"));
             document.getElementById("watchClose").setAttribute("aria-label", translate("close"));
+            const miniButton = document.getElementById("watchMinimize");
+            miniButton.setAttribute("aria-label", document.getElementById("watchDialog").classList.contains("is-minimized")
+                ? translate("expandPlayer") : translate("miniPlayer"));
+            miniButton.title = miniButton.getAttribute("aria-label");
             document.getElementById("watchFavorite").textContent = translate("save");
             document.getElementById("watchShare").textContent = translate("share");
+            document.getElementById("watchCopyLink").textContent = translate("copyLink");
+            document.getElementById("watchLaterButton").textContent =
+                activeVideo && watchLater.some(video => video.id === activeVideo.id)
+                    ? translate("removeWatchLater") : translate("watchLaterAction");
+            document.getElementById("watchAutoplayButton").textContent = `Autoplay: ${autoplayEnabled ? "On" : "Off"}`;
             document.getElementById("watchYoutube").textContent = translate("openYoutube");
             document.querySelectorAll(".message[data-i18n-key]").forEach(message => {
-                message.textContent = translate(message.dataset.i18nKey);
+                const text = message.querySelector("p") || message;
+                text.textContent = translate(message.dataset.i18nKey);
+                const retryButton = message.querySelector("button");
+                if(retryButton) retryButton.textContent = translate("retry");
             });
             document.querySelectorAll(".video-card, .short-card").forEach(card => {
-                const buttons = card.querySelectorAll(".action-icon-btn");
-                if(buttons[0]) {
-                    const isSaved = buttons[0].classList.contains("liked");
-                    buttons[0].textContent = isSaved ? translate("saved") : translate("save");
-                    buttons[0].setAttribute("aria-label", isSaved ? translate("removeFavorite") : translate("save"));
+                const favoriteButton = card.querySelector(".favorite-video-button");
+                if(favoriteButton) {
+                    const isSaved = favoriteButton.classList.contains("liked");
+                    favoriteButton.textContent = isSaved ? translate("saved") : translate("save");
+                    favoriteButton.setAttribute("aria-label", isSaved ? translate("removeFavorite") : translate("save"));
                 }
-                if(buttons[1]) buttons[1].textContent = translate("share");
+                const shareButton = card.querySelector(".share-video-button");
+                if(shareButton) shareButton.textContent = translate("share");
+                const copyButton = card.querySelector(".copy-link-button");
+                if(copyButton) copyButton.textContent = translate("copyLink");
+                const watchLaterCardButton = card.querySelector(".watch-later-card-button");
+                if(watchLaterCardButton) watchLaterCardButton.textContent =
+                    watchLater.some(video => video.id === card.dataset.videoId)
+                        ? translate("removeWatchLater") : translate("watchLaterAction");
+                const playlistButton = card.querySelector(".playlist-add-button");
+                if(playlistButton) playlistButton.textContent = translate("addToPlaylist");
+                const playlistSelect = card.querySelector(".playlist-select");
+                if(playlistSelect) {
+                    playlistSelect.setAttribute("aria-label", translate("choosePlaylist"));
+                    const placeholder = playlistSelect.querySelector('option[value=""]');
+                    if(placeholder) placeholder.textContent = translate("choosePlaylist");
+                }
+                const removePlaylistVideoButton = card.querySelector(".playlist-remove-video");
+                if(removePlaylistVideoButton) removePlaylistVideoButton.textContent = translate("removeFromPlaylist");
                 const metadata = card.querySelector(".video-meta");
                 if(metadata) metadata.textContent = formatVideoMeta(
                     card.dataset.channelTitle || "",
@@ -2053,10 +2816,15 @@
             }
             updateFavCount();
             updateWatchFavoriteButton();
+            renderSearchHistorySuggestions();
             const sentinel = document.getElementById("feedSentinel");
             if(sentinel.dataset.i18nKey) sentinel.textContent = translate(sentinel.dataset.i18nKey);
             if(currentMode === "favorites") renderFavorites();
             if(currentMode === "history") renderHistory();
+            if(currentMode === "watchLater") renderWatchLater();
+            if(currentMode === "playlists") renderPlaylists();
+            if(currentMode === "home" && !activeHomeSearch) renderPersonalDashboard();
+            renderOfflineStatus();
             if(activeVideo) {
                 document.getElementById("watchMeta").textContent = formatVideoMeta(
                     activeVideo.channelTitle, activeVideo.publishedAt, activeVideo.viewCount
@@ -2081,6 +2849,539 @@
             element.textContent = translate(key);
         }
 
+        function loadStoredVideos(key) {
+            try {
+                const saved = JSON.parse(localStorage.getItem(key) || "[]");
+                return Array.isArray(saved)
+                    ? saved.filter(video => video && typeof video.id === "string" && typeof video.title === "string")
+                    : [];
+            } catch(error) {
+                console.error(`Could not read ${key}.`, error);
+                return [];
+            }
+        }
+
+        function loadStoredObject(key) {
+            try {
+                const saved = JSON.parse(localStorage.getItem(key) || "null");
+                return saved && typeof saved.id === "string" && typeof saved.title === "string" ? saved : null;
+            } catch(error) {
+                console.error(`Could not read ${key}.`, error);
+                return null;
+            }
+        }
+
+        function renderPersonalDashboard() {
+            if(currentMode !== "home" || activeHomeSearch) return;
+            const dashboard = document.getElementById("dashboardShelves");
+            dashboard.replaceChildren();
+            const shelves = [
+                [translate("continueWatching"), lastWatchedVideo ? [lastWatchedVideo] : []],
+                [translate("recentlyWatched"), history.slice(0, 8)],
+                [translate("mostWatched"), [...history].sort((a, b) => (b.playCount || 0) - (a.playCount || 0)).slice(0, 8)],
+                [translate("yourFavorites"), favorites.slice(0, 8)],
+                [translate("watchLater"), watchLater.slice(0, 8)]
+            ];
+            let hasShelfItems = false;
+            shelves.forEach(([title, videos]) => {
+                if(!videos.length) return;
+                hasShelfItems = true;
+                dashboard.appendChild(createDashboardShelf(title, videos));
+            });
+
+            if(playlists.length) {
+                const playlistShelf = document.createElement("section");
+                playlistShelf.className = "dashboard-shelf";
+                const heading = document.createElement("div");
+                heading.className = "dashboard-shelf-heading";
+                const title = document.createElement("h3");
+                title.textContent = translate("yourPlaylists");
+                heading.appendChild(title);
+                playlistShelf.appendChild(heading);
+                const track = document.createElement("div");
+                track.className = "dashboard-shelf-track playlist-shortcuts";
+                playlists.slice(0, 8).forEach(playlist => {
+                    const button = document.createElement("button");
+                    button.className = "dashboard-action";
+                    button.type = "button";
+                    button.textContent = `${playlist.name} (${playlist.videos.length})`;
+                    button.addEventListener("click", () => switchTab("playlists"));
+                    track.appendChild(button);
+                });
+                playlistShelf.appendChild(track);
+                dashboard.appendChild(playlistShelf);
+                hasShelfItems = true;
+            }
+
+            if(searchHistory.length) {
+                const searchShelf = document.createElement("section");
+                searchShelf.className = "dashboard-shelf";
+                const heading = document.createElement("div");
+                heading.className = "dashboard-shelf-heading";
+                const title = document.createElement("h3");
+                title.textContent = translate("recentlySearched");
+                heading.appendChild(title);
+                searchShelf.appendChild(heading);
+                const track = document.createElement("div");
+                track.className = "dashboard-shelf-track playlist-shortcuts";
+                searchHistory.slice(0, 8).forEach(query => {
+                    const button = document.createElement("button");
+                    button.className = "dashboard-action";
+                    button.type = "button";
+                    button.textContent = `🕒 ${query}`;
+                    button.addEventListener("click", () => {
+                        document.getElementById("searchQuery").value = query;
+                        executeSearch();
+                    });
+                    track.appendChild(button);
+                });
+                searchShelf.appendChild(track);
+                dashboard.appendChild(searchShelf);
+                hasShelfItems = true;
+            }
+            if(!hasShelfItems) {
+                const empty = document.createElement("p");
+                empty.className = "message";
+                empty.textContent = translate("noDashboardItems");
+                dashboard.appendChild(empty);
+            }
+        }
+
+        function createDashboardShelf(title, videos) {
+            const section = document.createElement("section");
+            section.className = "dashboard-shelf";
+            const heading = document.createElement("div");
+            heading.className = "dashboard-shelf-heading";
+            const titleElement = document.createElement("h3");
+            titleElement.textContent = title;
+            heading.appendChild(titleElement);
+            section.appendChild(heading);
+            const track = document.createElement("div");
+            track.className = "dashboard-shelf-track";
+            videos.forEach(video => {
+                track.appendChild(createVideoCardElement(
+                    video.id, video.title, false, video.channelTitle || "", video.publishedAt || "",
+                    "", null, "", "dashboard"
+                ));
+            });
+            section.appendChild(track);
+            return section;
+        }
+
+        function chooseRandomVideo() {
+            const sources = [...history, ...favorites, ...watchLater, ...playlists.flatMap(playlist => playlist.videos)];
+            const unique = [...new Map(sources.map(video => [video.id, video])).values()];
+            if(!unique.length) {
+                showToast(translate("noRandomVideos"));
+                return;
+            }
+            const video = unique[Math.floor(Math.random() * unique.length)];
+            openVideo(video.id, video.title, null, video.channelTitle || "", video.publishedAt || "");
+        }
+
+        function toggleWatchLater(video) {
+            const existingIndex = watchLater.findIndex(item => item.id === video.id);
+            if(existingIndex >= 0) {
+                watchLater.splice(existingIndex, 1);
+                showToast(translate("removeWatchLater"));
+            } else {
+                watchLater.unshift({
+                    id: video.id, title: video.title,
+                    channelTitle: video.channelTitle || "", publishedAt: video.publishedAt || "",
+                    addedAt: Date.now()
+                });
+                showToast(translate("addedToPlaylist") + ": " + translate("watchLater"));
+            }
+            localStorage.setItem("shivahub_watch_later", JSON.stringify(watchLater));
+            renderWatchLater();
+            renderPersonalDashboard();
+            document.querySelectorAll(".watch-later-card-button").forEach(button => {
+                const card = button.closest(".video-card, .short-card");
+                if(card?.dataset.videoId === video.id) {
+                    button.textContent = watchLater.some(item => item.id === video.id)
+                        ? translate("removeWatchLater") : translate("watchLaterAction");
+                }
+            });
+            if(activeVideo?.id === video.id) {
+                document.getElementById("watchLaterButton").textContent =
+                    watchLater.some(item => item.id === video.id)
+                        ? translate("removeWatchLater") : translate("watchLaterAction");
+            }
+        }
+
+        function renderWatchLater() {
+            const grid = document.getElementById("watchLaterGrid");
+            grid.replaceChildren();
+            if(!watchLater.length) {
+                showRequestError(grid, translate("emptyWatchLater"), false);
+                return;
+            }
+            watchLater.forEach(video => {
+                grid.appendChild(createVideoCardElement(
+                    video.id, video.title, false, video.channelTitle || "", video.publishedAt || "",
+                    "", null, "", "watchLater"
+                ));
+            });
+        }
+
+        function loadPlaylists() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("shivahub_playlists") || "[]");
+                return Array.isArray(saved)
+                    ? saved.filter(playlist =>
+                        playlist && typeof playlist.id === "string" &&
+                        typeof playlist.name === "string" && Array.isArray(playlist.videos)
+                    )
+                    : [];
+            } catch(error) {
+                console.error("Could not read saved playlists.", error);
+                return [];
+            }
+        }
+
+        function savePlaylists() {
+            try {
+                localStorage.setItem("shivahub_playlists", JSON.stringify(playlists));
+            } catch(error) {
+                console.error("Could not save playlists.", error);
+                showToast(error.message || "Could not save playlists.");
+            }
+        }
+
+        function renderPlaylists() {
+            const list = document.getElementById("playlistList");
+            list.replaceChildren();
+            if(!playlists.length) {
+                const empty = document.createElement("p");
+                empty.className = "message";
+                empty.textContent = translate("emptyPlaylists");
+                list.appendChild(empty);
+                return;
+            }
+            playlists.forEach(playlist => {
+                const section = document.createElement("section");
+                section.className = "playlist-section";
+                const heading = document.createElement("div");
+                heading.className = "playlist-heading";
+                const title = document.createElement("h3");
+                title.textContent = `${playlist.name} (${playlist.videos.length})`;
+                title.dataset.playlistTitle = playlist.id;
+                const description = document.createElement("p");
+                description.textContent = playlist.description || "";
+                const removePlaylist = document.createElement("button");
+                removePlaylist.type = "button";
+                removePlaylist.textContent = translate("deletePlaylist");
+                removePlaylist.addEventListener("click", () => {
+                    if(!window.confirm(`${translate("deletePlaylist")}: ${playlist.name}?`)) return;
+                    playlists = playlists.filter(item => item.id !== playlist.id);
+                    document.querySelectorAll(".playlist-select option").forEach(option => {
+                        if(option.value === playlist.id) option.remove();
+                    });
+                    savePlaylists();
+                    renderPlaylists();
+                    renderPersonalDashboard();
+                });
+                const editPlaylist = document.createElement("button");
+                editPlaylist.type = "button";
+                editPlaylist.textContent = "Rename";
+                editPlaylist.addEventListener("click", () => {
+                    const name = window.prompt("Playlist name", playlist.name)?.trim();
+                    if(!name || name === playlist.name) return;
+                    if(playlists.some(item => item.id !== playlist.id && item.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
+                        showToast(translate("playlistNameExists"));
+                        return;
+                    }
+                    playlist.name = name;
+                    document.querySelectorAll(".playlist-select option").forEach(option => {
+                        if(option.value === playlist.id) option.textContent = name;
+                    });
+                    savePlaylists();
+                    renderPlaylists();
+                    renderPersonalDashboard();
+                });
+                const exportPlaylist = document.createElement("button");
+                exportPlaylist.type = "button";
+                exportPlaylist.textContent = "Export";
+                exportPlaylist.addEventListener("click", () => exportPlaylistData(playlist));
+                const editDescription = document.createElement("button");
+                editDescription.type = "button";
+                editDescription.textContent = "Description";
+                editDescription.addEventListener("click", () => {
+                    const value = window.prompt("Playlist description", playlist.description || "");
+                    if(value === null) return;
+                    playlist.description = value.trim().slice(0, 160);
+                    savePlaylists();
+                    renderPlaylists();
+                });
+                const tools = document.createElement("div");
+                tools.className = "playlist-tools";
+                tools.append(editPlaylist, editDescription, exportPlaylist, removePlaylist);
+                heading.append(title, tools, description);
+                section.appendChild(heading);
+                const coverVideo = playlist.videos.find(video => video.id === playlist.coverVideoId);
+                if(coverVideo) {
+                    const cover = document.createElement("img");
+                    cover.className = "playlist-cover";
+                    cover.src = `https://i.ytimg.com/vi/${encodeURIComponent(coverVideo.id)}/hqdefault.jpg`;
+                    cover.alt = "";
+                    cover.loading = "lazy";
+                    section.appendChild(cover);
+                }
+                if(!playlist.videos.length) {
+                    const empty = document.createElement("p");
+                    empty.className = "message";
+                    empty.textContent = translate("emptyPlaylist");
+                    section.appendChild(empty);
+                } else {
+                    const grid = document.createElement("div");
+                    grid.className = "video-grid";
+                    playlist.videos.forEach((video, index) => {
+                        const card = createVideoCardElement(
+                            video.id, video.title, false, video.channelTitle || "", video.publishedAt || "",
+                            "", null, playlist.id
+                        );
+                        card.classList.add("playlist-card");
+                        card.draggable = true;
+                        card.dataset.playlistIndex = String(index);
+                        const coverButton = document.createElement("button");
+                        coverButton.className = "playlist-cover-button";
+                        coverButton.type = "button";
+                        coverButton.textContent = "Set cover";
+                        coverButton.addEventListener("click", () => {
+                            playlist.coverVideoId = video.id;
+                            savePlaylists();
+                            renderPlaylists();
+                        });
+                        card.querySelector(".card-actions").appendChild(coverButton);
+                        grid.appendChild(card);
+                    });
+                    setupPlaylistReordering(grid, playlist.id);
+                    section.appendChild(grid);
+                }
+                list.appendChild(section);
+            });
+        }
+
+        function addVideoToPlaylist(playlistId, video) {
+            const playlist = playlists.find(item => item.id === playlistId);
+            if(!playlist) return;
+            if(playlist.videos.some(item => item.id === video.id)) {
+                showToast(`${video.title} is already in ${playlist.name}.`);
+                return;
+            }
+            playlist.videos.unshift({
+                id: video.id,
+                title: video.title,
+                channelTitle: video.channelTitle,
+                publishedAt: video.publishedAt
+            });
+            savePlaylists();
+            if(currentMode === "playlists") renderPlaylists();
+            renderPersonalDashboard();
+            showToast(`${translate("addedToPlaylist")}: ${playlist.name}`);
+        }
+
+        function removeVideoFromPlaylist(playlistId, videoId) {
+            const playlist = playlists.find(item => item.id === playlistId);
+            if(!playlist) return;
+            playlist.videos = playlist.videos.filter(video => video.id !== videoId);
+            savePlaylists();
+            renderPlaylists();
+            renderPersonalDashboard();
+        }
+
+        function createPlaylist(name, description = "") {
+            const normalizedName = name.trim();
+            if(!normalizedName) return;
+            if(playlists.some(playlist => playlist.name.toLocaleLowerCase() === normalizedName.toLocaleLowerCase())) {
+                showToast(translate("playlistNameExists"));
+                return;
+            }
+            const id = window.crypto?.randomUUID
+                ? window.crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            playlists.push({ id, name: normalizedName, description: description.trim(), videos: [] });
+            document.querySelectorAll(".playlist-select").forEach(select => {
+                const option = document.createElement("option");
+                option.value = id;
+                option.textContent = normalizedName;
+                select.appendChild(option);
+            });
+            savePlaylists();
+            document.getElementById("playlistNameInput").value = "";
+            document.getElementById("playlistDescriptionInput").value = "";
+            renderPlaylists();
+            renderPersonalDashboard();
+        }
+
+        function setupPlaylistReordering(grid, playlistId) {
+            let draggedCard = null;
+            grid.addEventListener("dragstart", event => {
+                draggedCard = event.target.closest(".playlist-card");
+                if(!draggedCard) return;
+                draggedCard.classList.add("is-dragging");
+                event.dataTransfer.effectAllowed = "move";
+                event.dataTransfer.setData("text/plain", draggedCard.dataset.videoId);
+            });
+            grid.addEventListener("dragover", event => {
+                event.preventDefault();
+                const target = event.target.closest(".playlist-card");
+                if(!target || !draggedCard || target === draggedCard) return;
+                const bounds = target.getBoundingClientRect();
+                const insertAfter = event.clientY > bounds.top + bounds.height / 2;
+                grid.insertBefore(draggedCard, insertAfter ? target.nextSibling : target);
+            });
+            grid.addEventListener("drop", event => {
+                event.preventDefault();
+                const playlist = playlists.find(item => item.id === playlistId);
+                if(!playlist) return;
+                const videosById = new Map(playlist.videos.map(video => [video.id, video]));
+                playlist.videos = [...grid.querySelectorAll(".playlist-card")]
+                    .map(card => videosById.get(card.dataset.videoId))
+                    .filter(Boolean);
+                savePlaylists();
+                renderPlaylists();
+            });
+            grid.addEventListener("dragend", () => {
+                if(draggedCard) draggedCard.classList.remove("is-dragging");
+                draggedCard = null;
+            });
+        }
+
+        function exportPlaylistData(playlist) {
+            const blob = new Blob([JSON.stringify(playlist, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${playlist.name.replace(/[<>:"/\\|?*]+/g, "_")}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function importPlaylistFile(file) {
+            if(!file) return;
+            try {
+                const parsed = JSON.parse(await file.text());
+                const imported = Array.isArray(parsed) ? parsed : [parsed];
+                const valid = imported.filter(item =>
+                    item && typeof item.name === "string" && Array.isArray(item.videos)
+                );
+                if(!valid.length) throw new Error("The selected file does not contain a valid playlist.");
+                valid.forEach(item => {
+                    let name = item.name.trim().slice(0, 60);
+                    if(!name) return;
+                    if(playlists.some(playlist => playlist.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
+                        let suffix = 2;
+                        const baseName = name;
+                        do {
+                            name = `${baseName} (${suffix++})`;
+                        } while(playlists.some(playlist => playlist.name.toLocaleLowerCase() === name.toLocaleLowerCase()));
+                    }
+                    const videos = item.videos.filter(video =>
+                        video && typeof video.id === "string" && typeof video.title === "string"
+                    ).map(video => ({
+                        id: video.id, title: video.title,
+                        channelTitle: typeof video.channelTitle === "string" ? video.channelTitle : "",
+                        publishedAt: typeof video.publishedAt === "string" ? video.publishedAt : ""
+                    }));
+                    playlists.push({
+                        id: window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+                        name,
+                        description: typeof item.description === "string" ? item.description.slice(0, 160) : "",
+                        coverVideoId: typeof item.coverVideoId === "string" ? item.coverVideoId : "",
+                        videos
+                    });
+                });
+                document.querySelectorAll(".playlist-select").forEach(select => {
+                    select.querySelectorAll('option:not([value=""])').forEach(option => option.remove());
+                    playlists.forEach(playlist => {
+                        const option = document.createElement("option");
+                        option.value = playlist.id;
+                        option.textContent = playlist.name;
+                        select.appendChild(option);
+                    });
+                });
+                savePlaylists();
+                renderPlaylists();
+                renderPersonalDashboard();
+                showToast("Playlist import complete.");
+            } catch(error) {
+                console.error("Could not import playlist.", error);
+                showToast(error.message || "Could not import playlist.");
+            } finally {
+                document.getElementById("playlistImportInput").value = "";
+            }
+        }
+
+        function loadSearchHistory() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("shivahub_search_history") || "[]");
+                return Array.isArray(saved)
+                    ? saved.filter(query => typeof query === "string").slice(0, 20)
+                    : [];
+            } catch(error) {
+                console.error("Could not read saved search history.", error);
+                return [];
+            }
+        }
+
+        function saveSearchHistory(query) {
+            const normalizedQuery = query.trim();
+            if(!normalizedQuery) return;
+            searchHistory = [
+                normalizedQuery,
+                ...searchHistory.filter(item => item.toLocaleLowerCase() !== normalizedQuery.toLocaleLowerCase())
+            ].slice(0, 20);
+            localStorage.setItem("shivahub_search_history", JSON.stringify(searchHistory));
+            renderSearchHistorySuggestions();
+            renderPersonalDashboard();
+        }
+
+        function editDistance(left, right) {
+            if(Math.abs(left.length - right.length) > 2) return 3;
+            let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+            for(let row = 1; row <= left.length; row++) {
+                const current = [row];
+                for(let column = 1; column <= right.length; column++) {
+                    current[column] = Math.min(
+                        current[column - 1] + 1,
+                        previous[column] + 1,
+                        previous[column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1)
+                    );
+                }
+                previous = current;
+            }
+            return previous[right.length];
+        }
+
+        function renderSearchHistorySuggestions() {
+            const suggestions = document.getElementById("searchHistorySuggestions");
+            const query = document.getElementById("searchQuery").value.trim().toLocaleLowerCase();
+            const matches = searchHistory.filter(item => {
+                const normalizedItem = item.toLocaleLowerCase();
+                if(!query || normalizedItem.includes(query)) return true;
+                return query.length >= 4 && editDistance(query, normalizedItem) <= (query.length >= 8 ? 2 : 1);
+            });
+            suggestions.replaceChildren(...matches.map(item => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "search-suggestion";
+                button.setAttribute("role", "option");
+                button.setAttribute("aria-label", `${translate("search")}: ${item}`);
+                button.textContent = `🕒 ${item}`;
+                button.addEventListener("click", () => {
+                    document.getElementById("searchQuery").value = item;
+                    suggestions.classList.remove("is-visible");
+                    executeSearch();
+                });
+                return button;
+            }));
+            suggestions.classList.toggle(
+                "is-visible",
+                matches.length > 0 && document.activeElement === document.getElementById("searchQuery")
+            );
+        }
+
         function toggleTheme() {
             let html = document.documentElement;
             let btn = document.getElementById("themeToggleBtn");
@@ -2091,24 +3392,44 @@
                 html.setAttribute("data-theme", "dark");
                 btn.innerText = "🌙";
             }
+            localStorage.setItem("shivahub_theme", html.getAttribute("data-theme"));
         }
 
-        function switchTab(tab) {
+        function switchTab(tab, preserveSearch = false, skipHomeLoad = false) {
+            const wasSearching = Boolean(activeHomeSearch);
             currentMode = tab;
+            if(tab === "home" && !preserveSearch) {
+                activeHomeSearch = "";
+                document.getElementById("searchQuery").value = "";
+                if(wasSearching) updateBrowserHistory("home", "");
+            }
             updateHomePresentation();
-            ['homeTabBtn', 'shortsTabBtn', 'favTabBtn', 'historyTabBtn'].forEach(id => {
+            ['homeTabBtn', 'shortsTabBtn', 'favTabBtn', 'historyTabBtn', 'watchLaterTabBtn', 'playlistsTabBtn'].forEach(id => {
                 document.getElementById(id).classList.remove("active");
             });
-            ['homeView', 'shortsView', 'favoritesView', 'historyView'].forEach(id => {
+            ['homeView', 'shortsView', 'favoritesView', 'historyView', 'watchLaterView', 'playlistsView'].forEach(id => {
                 document.getElementById(id).style.display = "none";
             });
             document.getElementById("categoryBar").style.display = (tab === 'home' || tab === 'shorts') ? "flex" : "none";
             document.getElementById("feedSentinel").style.display = (tab === 'home' || tab === 'shorts') ? "block" : "none";
+            const activeView = document.getElementById(
+                { home: "homeView", shorts: "shortsView", favorites: "favoritesView", history: "historyView", watchLater: "watchLaterView", playlists: "playlistsView" }[tab]
+            );
+            const activeTab = document.getElementById(
+                { home: "homeTabBtn", shorts: "shortsTabBtn", favorites: "favTabBtn", history: "historyTabBtn", watchLater: "watchLaterTabBtn", playlists: "playlistsTabBtn" }[tab]
+            );
+            if(activeView) {
+                activeView.classList.remove("view-transition");
+                requestAnimationFrame(() => activeView.classList.add("view-transition"));
+            }
 
             if(tab === 'home') {
                 document.getElementById("homeTabBtn").classList.add("active");
                 document.getElementById("homeView").style.display = "block";
-                if(!document.getElementById("videoGrid").querySelector(".video-card")) fetchHomeVideos();
+                renderPersonalDashboard();
+                if(!skipHomeLoad && (wasSearching && !preserveSearch || !document.getElementById("videoGrid").querySelector(".video-card"))) {
+                    fetchHomeVideos();
+                }
                 setupFeedObserver();
             } else if(tab === 'shorts') {
                 document.getElementById("shortsTabBtn").classList.add("active");
@@ -2123,7 +3444,17 @@
                 document.getElementById("historyTabBtn").classList.add("active");
                 document.getElementById("historyView").style.display = "block";
                 renderHistory();
+            } else if(tab === 'watchLater') {
+                document.getElementById("watchLaterTabBtn").classList.add("active");
+                document.getElementById("watchLaterView").style.display = "block";
+                renderWatchLater();
+            } else if(tab === 'playlists') {
+                document.getElementById("playlistsTabBtn").classList.add("active");
+                document.getElementById("playlistsView").style.display = "block";
+                renderPlaylists();
             }
+            document.querySelectorAll(".nav-tabs .tab-btn").forEach(button => button.removeAttribute("aria-current"));
+            if(activeTab) activeTab.setAttribute("aria-current", "page");
         }
 
         function filterByCategory(cat) {
@@ -2135,13 +3466,14 @@
             const isHomeFeed = currentMode === "home";
             document.querySelector(".hero").hidden = !isHomeFeed || Boolean(activeHomeSearch);
             document.getElementById("homeView").classList.toggle("is-search-results", Boolean(activeHomeSearch));
+            document.getElementById("searchBackButton").classList.toggle("is-visible", isHomeFeed && Boolean(activeHomeSearch));
         }
 
         // YouTube search.list returns at most 50 results per request.
         // nextPageToken is used to request the next batch as the user scrolls.
         const feedState = {
-            home: { nextPageToken: "", loading: false, exhausted: false, query: "" },
-            shorts: { nextPageToken: "", loading: false, exhausted: false, query: "" }
+            home: { nextPageToken: "", loading: false, exhausted: false, failed: false, query: "" },
+            shorts: { nextPageToken: "", loading: false, exhausted: false, failed: false, query: "" }
         };
         let feedObserver = null;
         const feedRequestIds = { home: 0, shorts: 0 };
@@ -2174,13 +3506,48 @@
             return false;
         }
 
-        function showRequestError(grid, message, append = false, translationKey = "") {
+        function showRequestError(grid, message, append = false, translationKey = "", retryMode = "", retryReset = true) {
             const errorMessage = document.createElement("div");
-            errorMessage.className = "message";
+            errorMessage.className = `message${retryMode ? " feed-error" : ""}`;
             if(translationKey) errorMessage.dataset.i18nKey = translationKey;
-            errorMessage.textContent = message;
+            const text = document.createElement("p");
+            text.textContent = message;
+            errorMessage.appendChild(text);
+            if(retryMode) {
+                const retryButton = document.createElement("button");
+                retryButton.className = "playlist-add-button";
+                retryButton.type = "button";
+                retryButton.textContent = translate("retry");
+                retryButton.addEventListener("click", () => loadFeedPage(retryMode, retryReset, true));
+                errorMessage.appendChild(retryButton);
+            }
             if(append) grid.appendChild(errorMessage);
             else grid.replaceChildren(errorMessage);
+        }
+
+        function showLoadingSkeletons(grid, count = 8) {
+            const skeletons = Array.from({ length: count }, () => {
+                const card = document.createElement("div");
+                card.className = "skeleton-card";
+                card.setAttribute("aria-hidden", "true");
+                card.innerHTML = '<div class="skeleton-block skeleton-thumbnail"></div><div class="skeleton-block skeleton-line"></div><div class="skeleton-block skeleton-line short"></div>';
+                return card;
+            });
+            grid.replaceChildren(...skeletons);
+        }
+
+        function renderOfflineStatus() {
+            const banner = document.getElementById("offlineBanner");
+            banner.textContent = translate("offline");
+            banner.hidden = navigator.onLine;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("siteToast");
+            toast.textContent = message;
+            toast.hidden = false;
+            window.clearTimeout(toastTimer);
+            toastTimer = window.setTimeout(() => { toast.hidden = true; }, 2600);
         }
 
         function setupFeedObserver() {
@@ -2204,30 +3571,34 @@
             state.nextPageToken = "";
             state.loading = false;
             state.exhausted = false;
+            state.failed = false;
             state.query = getFeedConfig(mode).query;
             feedRequestIds[mode]++;
         }
 
-        async function loadFeedPage(mode, reset = false) {
+        async function loadFeedPage(mode, reset = false, forceRetry = false) {
             const config = getFeedConfig(mode);
             const { grid, state, createCard, query } = config;
 
             if(showApiKeyMessage(grid)) return;
-            if(state.loading || (!reset && state.exhausted)) return;
+            if(state.loading || (!reset && state.exhausted) || (state.failed && !reset && !forceRetry)) return;
+            state.failed = false;
 
             if(reset) {
                 resetFeed(mode);
                 state.query = query;
-                showRequestError(grid, translate("loading"), false, "loading");
+                showLoadingSkeletons(grid, mode === "shorts" ? 6 : 8);
             } else if(state.query !== query) {
                 reset = true;
                 resetFeed(mode);
                 state.query = query;
-                showRequestError(grid, translate("loading"), false, "loading");
+                showLoadingSkeletons(grid, mode === "shorts" ? 6 : 8);
             }
+            grid.querySelectorAll(".feed-error").forEach(error => error.remove());
 
             state.loading = true;
             const requestId = feedRequestIds[mode];
+            let pageLoaded = false;
             const params = new URLSearchParams({
                 part: "snippet",
                 maxResults: "50",
@@ -2298,6 +3669,7 @@
                 }
                 state.nextPageToken = data.nextPageToken || "";
                 state.exhausted = !state.nextPageToken;
+                pageLoaded = true;
 
                 if(!grid.querySelector(".video-card, .short-card")) {
                     const messageKey = mode === "shorts" ? "noShorts" : "noVideos";
@@ -2310,7 +3682,9 @@
                 }
             } catch(error) {
                 if(requestId === feedRequestIds[mode]) {
-                    showRequestError(grid, error.message || translate("loadFailed"), !reset);
+                    state.failed = true;
+                    const message = !navigator.onLine ? translate("offline") : error.message || translate("loadFailed");
+                    showRequestError(grid, message, !reset, "", mode, reset);
                     if(sentinel) {
                         sentinel.style.display = "block";
                         setFeedMessage(sentinel, "loadFailed");
@@ -2321,7 +3695,7 @@
                 // Re-check after loading finishes. This also loads another page
                 // when the sentinel is already inside the viewport.
                 if(requestId === feedRequestIds[mode] &&
-                   !state.exhausted && currentMode === mode && feedObserver) {
+                   pageLoaded && !state.exhausted && currentMode === mode && feedObserver) {
                     requestAnimationFrame(() => {
                         const target = document.getElementById("feedSentinel");
                         if(target) {
@@ -2349,18 +3723,20 @@
             await loadFeedPage("shorts", true);
         }
 
-        function createVideoCard(videoId, title, channelTitle, publishedAt, description = "", details = null) {
-            return createVideoCardElement(videoId, title, false, channelTitle, publishedAt, description, details);
+        function createVideoCard(videoId, title, channelTitle, publishedAt, description = "", details = null, playlistId = "", libraryContext = "") {
+            return createVideoCardElement(videoId, title, false, channelTitle, publishedAt, description, details, playlistId, libraryContext);
         }
 
         function createShortCard(videoId, title, channelTitle, publishedAt) {
             return createVideoCardElement(videoId, title, true, channelTitle, publishedAt);
         }
 
-        function createVideoCardElement(videoId, title, isShort, channelTitle = "", publishedAt = "", description = "", details = null) {
+        function createVideoCardElement(videoId, title, isShort, channelTitle = "", publishedAt = "", description = "", details = null, playlistId = "", libraryContext = "") {
             let isFav = favorites.some(v => v.id === videoId);
             let card = document.createElement("div");
             card.className = isShort ? "short-card" : "video-card";
+            card.dataset.videoId = videoId;
+            if(videoId === selectedVideoId) card.classList.add("is-selected");
             card.dataset.channelTitle = channelTitle;
             card.dataset.publishedAt = publishedAt;
             card.dataset.viewCount = details?.statistics?.viewCount || "";
@@ -2407,33 +3783,100 @@
             actions.className = "card-actions";
 
             let favoriteButton = document.createElement("button");
-            favoriteButton.className = `action-icon-btn${isFav ? " liked" : ""}`;
+            favoriteButton.className = `action-icon-btn favorite-video-button${isFav ? " liked" : ""}`;
             favoriteButton.textContent = isFav ? translate("saved") : translate("save");
             favoriteButton.setAttribute("aria-label", isFav ? translate("removeFavorite") : translate("save"));
             favoriteButton.addEventListener("click", () => toggleFavorite(videoId, title, favoriteButton, channelTitle, publishedAt));
 
             let shareButton = document.createElement("button");
-            shareButton.className = "action-icon-btn";
+            shareButton.className = "action-icon-btn share-video-button";
             shareButton.textContent = translate("share");
             shareButton.addEventListener("click", () => shareVideo(videoId));
 
-            actions.append(favoriteButton, shareButton);
+            let copyButton = document.createElement("button");
+            copyButton.className = "action-icon-btn copy-link-button";
+            copyButton.textContent = translate("copyLink");
+            copyButton.addEventListener("click", () => copyVideoLink(videoId));
+
+            let watchLaterButton = document.createElement("button");
+            watchLaterButton.className = "action-icon-btn watch-later-card-button";
+            watchLaterButton.textContent = watchLater.some(video => video.id === videoId)
+                ? translate("removeWatchLater") : translate("watchLaterAction");
+            watchLaterButton.addEventListener("click", () => toggleWatchLater({
+                id: videoId, title, channelTitle, publishedAt
+            }));
+
+            actions.append(favoriteButton, shareButton, copyButton, watchLaterButton);
+            if(playlistId) {
+                const removeButton = document.createElement("button");
+                removeButton.className = "playlist-remove-video";
+                removeButton.type = "button";
+                removeButton.textContent = translate("removeFromPlaylist");
+                removeButton.addEventListener("click", () => removeVideoFromPlaylist(playlistId, videoId));
+                const playlistActions = document.createElement("div");
+                playlistActions.className = "playlist-card-actions";
+                playlistActions.appendChild(removeButton);
+                info.appendChild(playlistActions);
+            } else {
+                const playlistActions = document.createElement("div");
+                playlistActions.className = "playlist-card-actions";
+                const playlistSelect = document.createElement("select");
+                playlistSelect.className = "playlist-select";
+                playlistSelect.setAttribute("aria-label", translate("choosePlaylist"));
+                const placeholder = document.createElement("option");
+                placeholder.value = "";
+                placeholder.textContent = translate("choosePlaylist");
+                playlistSelect.appendChild(placeholder);
+                playlists.forEach(playlist => {
+                    const option = document.createElement("option");
+                    option.value = playlist.id;
+                    option.textContent = playlist.name;
+                    playlistSelect.appendChild(option);
+                });
+                const addButton = document.createElement("button");
+                addButton.className = "playlist-add-button";
+                addButton.type = "button";
+                addButton.textContent = translate("addToPlaylist");
+                addButton.addEventListener("click", () => {
+                    if(!playlistSelect.value) {
+                        if(!playlists.length) switchTab("playlists");
+                        else playlistSelect.focus();
+                        return;
+                    }
+                    addVideoToPlaylist(playlistSelect.value, {
+                        id: videoId, title, channelTitle, publishedAt
+                    });
+                    playlistSelect.value = "";
+                });
+                playlistActions.append(playlistSelect, addButton);
+                info.appendChild(playlistActions);
+            }
             info.appendChild(actions);
             card.append(player, info);
             card.tabIndex = 0;
             card.setAttribute("role", "button");
             card.setAttribute("aria-label", `Play ${isShort ? "Short" : "video"}: ${title}`);
             card.addEventListener("click", event => {
-                if(event.target.closest(".action-icon-btn")) return;
+                if(event.target.closest(".card-actions, .playlist-card-actions")) return;
+                selectVideoCard(card);
                 openVideo(videoId, title, card, channelTitle, publishedAt, isShort);
             });
             card.addEventListener("keydown", event => {
                 if((event.key === "Enter" || event.key === " ") && event.target === card) {
                     event.preventDefault();
+                    selectVideoCard(card);
                     openVideo(videoId, title, card, channelTitle, publishedAt, isShort);
                 }
             });
             return card;
+        }
+
+        function selectVideoCard(card) {
+            document.querySelectorAll(".video-card.is-selected, .short-card.is-selected").forEach(selected => {
+                selected.classList.remove("is-selected");
+            });
+            selectedVideoId = card.dataset.videoId || "";
+            card.classList.add("is-selected");
         }
 
         function formatVideoDuration(duration) {
@@ -2467,20 +3910,31 @@
             panel.classList.toggle("is-short", isShort);
 
             let iframe = document.createElement("iframe");
-            iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&playsinline=1&rel=0`;
+            iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=${autoplayEnabled ? "1" : "0"}&playsinline=1&rel=0`;
             iframe.title = title;
-            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
             iframe.referrerPolicy = "strict-origin-when-cross-origin";
             iframe.allowFullscreen = true;
             player.replaceChildren(
                 document.getElementById("watchFullscreen"),
+                document.getElementById("watchMinimize"),
+                document.getElementById("watchTheater"),
                 document.getElementById("watchClose"),
                 iframe
             );
 
             let dialog = document.getElementById("watchDialog");
+            dialog.classList.remove("is-minimized");
+            dialog.classList.remove("is-theater");
+            document.getElementById("watchMinimize").setAttribute("aria-label", translate("miniPlayer"));
+            document.getElementById("watchMinimize").title = translate("miniPlayer");
+            document.getElementById("watchLaterButton").textContent =
+                watchLater.some(video => video.id === videoId)
+                    ? translate("removeWatchLater") : translate("watchLaterAction");
+            document.getElementById("watchAutoplayButton").textContent = `Autoplay: ${autoplayEnabled ? "On" : "Off"}`;
             dialog.classList.add("is-open");
             dialog.setAttribute("aria-hidden", "false");
+            dialog.querySelector(".watch-panel").setAttribute("aria-modal", "true");
             document.body.style.overflow = "hidden";
             updateWatchFavoriteButton();
             addToHistory(videoId, title, channelTitle, publishedAt);
@@ -2490,7 +3944,12 @@
         function closeVideo() {
             let dialog = document.getElementById("watchDialog");
             if(!dialog.classList.contains("is-open")) return;
+            window.clearTimeout(sleepTimerId);
+            sleepTimerId = 0;
+            document.getElementById("sleepTimerSelect").value = "0";
             dialog.classList.remove("is-open");
+            dialog.classList.remove("is-minimized");
+            dialog.classList.remove("is-theater");
             dialog.setAttribute("aria-hidden", "true");
             let player = document.getElementById("watchPlayer");
             player.querySelectorAll("iframe").forEach(iframe => iframe.remove());
@@ -2498,7 +3957,50 @@
             document.querySelector(".watch-panel").classList.remove("is-short");
             document.body.style.overflow = "";
             activeVideo = null;
+            dialog.querySelector(".watch-panel").setAttribute("aria-modal", "true");
             if(lastFocusedElement?.isConnected) lastFocusedElement.focus();
+        }
+
+        function setSleepTimer(seconds) {
+            window.clearTimeout(sleepTimerId);
+            sleepTimerId = 0;
+            if(seconds <= 0) return;
+            sleepTimerId = window.setTimeout(() => {
+                sleepTimerId = 0;
+                if(activeVideo) closeVideo();
+                showToast(translate("sleepTimerEnded"));
+            }, seconds * 1000);
+            showToast(translate("sleepTimerSet", { minutes: seconds / 60 }));
+        }
+
+        function toggleMiniPlayer() {
+            const dialog = document.getElementById("watchDialog");
+            if(!activeVideo) return;
+            const isMinimized = dialog.classList.toggle("is-minimized");
+            if(isMinimized) dialog.classList.remove("is-theater");
+            document.body.style.overflow = isMinimized ? "" : "hidden";
+            dialog.querySelector(".watch-panel").setAttribute("aria-modal", String(!isMinimized));
+            const button = document.getElementById("watchMinimize");
+            button.setAttribute("aria-label", translate(isMinimized ? "expandPlayer" : "miniPlayer"));
+            button.title = button.getAttribute("aria-label");
+            if(isMinimized) document.getElementById("searchQuery").focus({ preventScroll: true });
+            else document.getElementById("watchClose").focus();
+        }
+
+        function toggleTheaterMode() {
+            const dialog = document.getElementById("watchDialog");
+            if(!activeVideo) return;
+            const isTheater = dialog.classList.toggle("is-theater");
+            const button = document.getElementById("watchTheater");
+            button.setAttribute("aria-pressed", String(isTheater));
+            button.title = isTheater ? "Exit theater mode" : "Theater mode";
+        }
+
+        function toggleAutoplay() {
+            autoplayEnabled = !autoplayEnabled;
+            localStorage.setItem("shivahub_autoplay", String(autoplayEnabled));
+            document.getElementById("watchAutoplayButton").textContent = `Autoplay: ${autoplayEnabled ? "On" : "Off"}`;
+            showToast("Autoplay setting applies to the next video.");
         }
 
         function updateWatchFavoriteButton() {
@@ -2531,6 +4033,9 @@
                 button.setAttribute("aria-label", isFavorite ? translate("removeFavorite") : translate("save"));
             }
             if(currentMode === 'favorites') renderFavorites();
+            renderPersonalDashboard();
+            if(currentMode === "watchLater") renderWatchLater();
+            if(activeVideo?.id === id) updateWatchFavoriteButton();
         }
 
         function renderFavorites() {
@@ -2546,41 +4051,178 @@
         }
 
         function addToHistory(id, title, channelTitle = "", publishedAt = "") {
-            history = history.filter(v => v.id !== id);
-            history.unshift({ id, title, channelTitle, publishedAt });
-            if(history.length > 20) history.pop();
+            const watchedAt = Date.now();
+            const previous = history.find(video => video.id === id);
+            lastWatchedVideo = { id, title, channelTitle, publishedAt, lastWatchedAt: watchedAt };
+            localStorage.setItem("shivahub_continue_watching", JSON.stringify(lastWatchedVideo));
+            if(watchHistoryPaused) {
+                renderPersonalDashboard();
+                return;
+            }
+            history = history.filter(video => video.id !== id);
+            history.unshift({
+                id, title, channelTitle, publishedAt, lastWatchedAt: watchedAt,
+                playCount: (previous?.playCount || 0) + 1
+            });
+            if(history.length > 100) history.pop();
             localStorage.setItem("shivahub_history", JSON.stringify(history));
+            renderHistory();
+            renderPersonalDashboard();
         }
 
         function renderHistory() {
             let grid = document.getElementById("historyGrid");
-            if(history.length === 0) {
+            const query = document.getElementById("historySearchInput").value.trim().toLocaleLowerCase();
+            const date = document.getElementById("historyDateInput").value;
+            const filtered = history.filter(video => {
+                const textMatches = !query ||
+                    `${video.title} ${video.channelTitle || ""}`.toLocaleLowerCase().includes(query);
+                const videoDate = video.lastWatchedAt ? new Date(video.lastWatchedAt).toISOString().slice(0, 10) : "";
+                return textMatches && (!date || videoDate === date);
+            });
+            grid.replaceChildren();
+            if(filtered.length === 0) {
                 showRequestError(grid, translate("emptyHistory"), false, "emptyHistory");
                 return;
             }
-            grid.innerHTML = "";
-            history.forEach(v => {
-                grid.appendChild(createVideoCard(v.id, v.title, v.channelTitle, v.publishedAt));
+            filtered.forEach(video => {
+                const card = createVideoCardElement(
+                    video.id, video.title, false, video.channelTitle || "", video.publishedAt || "",
+                    "", null, "", "history"
+                );
+                const removeButton = document.createElement("button");
+                removeButton.className = "history-remove-button";
+                removeButton.type = "button";
+                removeButton.textContent = "Remove from history";
+                removeButton.addEventListener("click", () => removeHistoryEntry(video.id));
+                card.querySelector(".card-actions").appendChild(removeButton);
+                grid.appendChild(card);
             });
+            document.getElementById("undoHistoryButton").disabled = !removedHistory.length;
+        }
+
+        function removeHistoryEntry(videoId) {
+            const removed = history.find(video => video.id === videoId);
+            if(!removed) return;
+            history = history.filter(video => video.id !== videoId);
+            removedHistory = [removed];
+            localStorage.setItem("shivahub_removed_history", JSON.stringify(removedHistory));
+            localStorage.setItem("shivahub_history", JSON.stringify(history));
+            renderHistory();
+            renderPersonalDashboard();
+        }
+
+        function clearWatchHistory() {
+            if(!history.length) return;
+            if(!window.confirm("Clear all watch history?")) return;
+            removedHistory = [...history];
+            localStorage.setItem("shivahub_removed_history", JSON.stringify(removedHistory));
+            history = [];
+            localStorage.setItem("shivahub_history", "[]");
+            renderHistory();
+            renderPersonalDashboard();
+        }
+
+        function undoHistoryRemoval() {
+            if(!removedHistory.length) return;
+            const restored = new Map([...history, ...removedHistory].map(video => [video.id, video]));
+            history = [...restored.values()].sort((a, b) => (b.lastWatchedAt || 0) - (a.lastWatchedAt || 0)).slice(0, 100);
+            removedHistory = [];
+            localStorage.setItem("shivahub_removed_history", "[]");
+            localStorage.setItem("shivahub_history", JSON.stringify(history));
+            renderHistory();
+            renderPersonalDashboard();
         }
 
         function updateFavCount() {
             document.getElementById("favTabBtn").textContent = `⭐ ${translate("favorites", { count: favorites.length })}`;
         }
 
-        async function shareVideo(videoId) {
-            let link = `https://youtu.be/${videoId}`;
+        async function copyVideoLink(videoId) {
+            const link = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
             try {
                 await navigator.clipboard.writeText(link);
-                alert(translate("copied", { url: link }));
+                showToast(translate("linkCopied"));
             } catch(error) {
+                console.error("Could not copy video link.", error);
                 window.prompt(translate("sharePrompt"), link);
             }
         }
 
+        async function shareVideo(videoId) {
+            const link = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+            if(navigator.share) {
+                try {
+                    await navigator.share({ title: document.title, url: link });
+                    return;
+                } catch(error) {
+                    if(error.name === "AbortError") return;
+                    console.error("Could not share video.", error);
+                }
+            }
+            await copyVideoLink(videoId);
+        }
+
+        function updateBrowserHistory(view, query) {
+            const url = new URL(window.location.href);
+            if(query) url.searchParams.set("search", query);
+            else url.searchParams.delete("search");
+            const currentIndex = Number(window.history.state?.shivahubIndex) || 0;
+            window.history.pushState({
+                shivahub: true,
+                shivahubView: view,
+                shivahubQuery: query,
+                shivahubIndex: currentIndex + 1
+            }, "", url);
+        }
+
+        function restoreBrowserHistoryState(state) {
+            const view = state?.shivahubView === "search" ? "search" : "home";
+            const query = view === "search" ? (state.shivahubQuery || "") : "";
+            currentMode = "home";
+            switchTab("home", true, true);
+            document.getElementById("searchQuery").value = query;
+            activeHomeSearch = query;
+            updateHomePresentation();
+            fetchHomeVideos();
+        }
+
+        function goBackFromSearch() {
+            const url = new URL(window.location.href);
+            url.searchParams.delete("search");
+            window.history.replaceState({
+                shivahub: true,
+                shivahubView: "home",
+                shivahubQuery: "",
+                shivahubIndex: Number(window.history.state?.shivahubIndex) || 0
+            }, "", url);
+            switchTab("home", true, true);
+            document.getElementById("searchQuery").value = "";
+            activeHomeSearch = "";
+            updateHomePresentation();
+            document.getElementById("searchHistorySuggestions").classList.remove("is-visible");
+            fetchHomeVideos();
+        }
+
         function executeSearch() {
-            if(currentMode === 'home') fetchHomeVideos();
-            else if(currentMode === 'shorts') fetchShortsVideos();
+            const query = document.getElementById("searchQuery").value.trim();
+            document.getElementById("searchHistorySuggestions").classList.remove("is-visible");
+            if(!query) {
+                if(currentMode === "home") switchTab("home");
+                else if(currentMode === "shorts") fetchShortsVideos();
+                return;
+            }
+            saveSearchHistory(query);
+            if(currentMode === "shorts") {
+                fetchShortsVideos();
+            } else {
+                switchTab("home", true, true);
+                updateBrowserHistory("search", query);
+                document.getElementById("searchQuery").value = query;
+                activeHomeSearch = query;
+                updateHomePresentation();
+                fetchHomeVideos();
+            }
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
@@ -2589,20 +4231,120 @@
         }
 
         window.onload = () => {
+            renderSearchHistorySuggestions();
             setupFeedObserver();
+            const initialQuery = new URL(window.location.href).searchParams.get("search")?.trim() || "";
+            window.history.replaceState({
+                shivahub: true,
+                shivahubView: initialQuery ? "search" : "home",
+                shivahubQuery: initialQuery,
+                shivahubIndex: 0
+            }, "", window.location.href);
+            if(initialQuery) {
+                document.getElementById("searchQuery").value = initialQuery;
+                activeHomeSearch = initialQuery;
+                saveSearchHistory(initialQuery);
+                updateHomePresentation();
+            }
             fetchHomeVideos();
         };
+        window.addEventListener("popstate", event => restoreBrowserHistoryState(event.state));
         document.getElementById("watchClose").addEventListener("click", closeVideo);
         document.getElementById("watchFullscreen").addEventListener("click", toggleVideoFullscreen);
+        document.getElementById("watchMinimize").addEventListener("click", toggleMiniPlayer);
+        document.getElementById("watchTheater").addEventListener("click", toggleTheaterMode);
         document.getElementById("watchFavorite").addEventListener("click", toggleWatchFavorite);
+        document.getElementById("watchLaterButton").addEventListener("click", () => {
+            if(activeVideo) toggleWatchLater(activeVideo);
+        });
+        document.getElementById("watchAutoplayButton").addEventListener("click", toggleAutoplay);
+        document.getElementById("sleepTimerSelect").addEventListener("change", event => {
+            setSleepTimer(Number(event.target.value));
+        });
         document.getElementById("watchShare").addEventListener("click", () => {
             if(activeVideo) shareVideo(activeVideo.id);
         });
+        document.getElementById("watchCopyLink").addEventListener("click", () => {
+            if(activeVideo) copyVideoLink(activeVideo.id);
+        });
+        document.getElementById("playlistCreateForm").addEventListener("submit", event => {
+            event.preventDefault();
+            createPlaylist(
+                document.getElementById("playlistNameInput").value,
+                document.getElementById("playlistDescriptionInput").value
+            );
+        });
+        document.getElementById("playlistImportInput").addEventListener("change", event => {
+            importPlaylistFile(event.target.files?.[0]);
+        });
+        document.getElementById("randomDiscoveryButton").addEventListener("click", chooseRandomVideo);
+        document.getElementById("historySearchInput").addEventListener("input", renderHistory);
+        document.getElementById("historyDateInput").addEventListener("change", renderHistory);
+        document.getElementById("clearHistoryButton").addEventListener("click", clearWatchHistory);
+        document.getElementById("undoHistoryButton").addEventListener("click", undoHistoryRemoval);
+        document.getElementById("pauseHistoryButton").addEventListener("click", () => {
+            watchHistoryPaused = !watchHistoryPaused;
+            localStorage.setItem("shivahub_history_paused", String(watchHistoryPaused));
+            document.getElementById("pauseHistoryButton").textContent =
+                translate(watchHistoryPaused ? "resumeHistory" : "pauseHistory");
+            if(watchHistoryPaused) showToast(translate("historyPaused"));
+        });
+        document.getElementById("backToTop").addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        window.addEventListener("scroll", () => {
+            document.getElementById("backToTop").classList.toggle("is-visible", window.scrollY > 500);
+        }, { passive: true });
+        window.addEventListener("offline", renderOfflineStatus);
+        window.addEventListener("online", renderOfflineStatus);
+        renderOfflineStatus();
         document.getElementById("watchDialog").addEventListener("click", event => {
             if(event.target.id === "watchDialog") closeVideo();
         });
         document.addEventListener("keydown", event => {
             if(event.key === "Escape" && !document.fullscreenElement) closeVideo();
+            if(event.key === "Escape") document.getElementById("searchHistorySuggestions").classList.remove("is-visible");
+            const isTyping = event.target instanceof Element &&
+                event.target.matches("input, textarea, select, [contenteditable='true']");
+            if((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+                event.preventDefault();
+                document.getElementById("searchQuery").focus();
+            }
+            if(!isTyping && event.key === "/") {
+                event.preventDefault();
+                document.getElementById("searchQuery").focus();
+            }
+            if(!isTyping && event.key === "?") showToast(translate("keyboardHelp"));
+            if(activeVideo && !isTyping && event.key.toLowerCase() === "m") toggleMiniPlayer();
+            if(activeVideo && event.key.toLowerCase() === "t" && !isTyping) {
+                toggleTheaterMode();
+            }
+        });
+        document.getElementById("installAppButton").addEventListener("click", async () => {
+            if(!deferredInstallPrompt) {
+                showToast(translate("installHelp"));
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+        });
+        window.addEventListener("beforeinstallprompt", event => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+        });
+        window.addEventListener("appinstalled", () => {
+            deferredInstallPrompt = null;
+            showToast(translate("appInstalled"));
+        });
+        if("serviceWorker" in navigator && location.protocol !== "file:") {
+            navigator.serviceWorker.register("./service-worker.js")
+                .catch(error => console.error("Could not register the app service worker.", error));
+        }
+        document.addEventListener("click", event => {
+            if(!event.target.closest(".search-area")) {
+                document.getElementById("searchHistorySuggestions").classList.remove("is-visible");
+            }
         });
         document.addEventListener("fullscreenchange", () => {
             let isFullscreen = document.fullscreenElement === document.getElementById("watchPlayer");
