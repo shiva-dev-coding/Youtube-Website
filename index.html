@@ -1295,7 +1295,7 @@
     </div>
 
     <script>
-        const API_KEY = "AIzaSyDfOsM8pVU9aZ42bMpiH2DnXbFUadXpTmI"; // Add your YouTube Data API v3 key here.
+        const API_KEY = "AIzaSyDfOsM8pVU9aZ42bMpiH2DnXbFUadXpTmI"; // Paste your YouTube Data API v3 key between the quotes.
         let currentMode = 'home';
         let activeVideo = null;
         let lastFocusedElement = null;
@@ -1355,21 +1355,6 @@
             executeSearch();
         }
 
-        function showApiKeyMessage(grid) {
-            if(API_KEY === "YOUR_YOUTUBE_API_KEY") {
-                grid.innerHTML = "<div class='message'>Add your YouTube Data API v3 key in the API_KEY setting to load videos.</div>";
-                return true;
-            }
-            return false;
-        }
-
-        function showRequestError(grid, message) {
-            let errorMessage = document.createElement("div");
-            errorMessage.className = "message";
-            errorMessage.textContent = message;
-            grid.replaceChildren(errorMessage);
-        }
-
         // YouTube search.list returns at most 50 results per request.
         // nextPageToken is used to request the next batch as the user scrolls.
         const feedState = {
@@ -1399,8 +1384,9 @@
         }
 
         function showApiKeyMessage(grid) {
-            if(!API_KEY || API_KEY === "YOUR_YOUTUBE_API_KEY") {
-                grid.innerHTML = "<div class='message'>Nayi YouTube Data API v3 key add karein.</div>";
+            if(!API_KEY.trim()) {
+                grid.replaceChildren();
+                showRequestError(grid, "YouTube videos load karne ke liye index.html mein API_KEY setting ke quotes ke beech apni YouTube Data API v3 key add karein.");
                 return true;
             }
             return false;
