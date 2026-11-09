@@ -1377,7 +1377,7 @@
             shorts: { nextPageToken: "", loading: false, exhausted: false, query: "" }
         };
         let feedObserver = null;
-        let feedRequestId = 0;
+        const feedRequestIds = { home: 0, shorts: 0 };
 
         function getFeedConfig(mode) {
             if(mode === "shorts") {
@@ -1436,7 +1436,7 @@
             state.loading = false;
             state.exhausted = false;
             state.query = getFeedConfig(mode).query;
-            feedRequestId++;
+            feedRequestIds[mode]++;
         }
 
         async function loadFeedPage(mode, reset = false) {
@@ -1458,7 +1458,7 @@
             }
 
             state.loading = true;
-            const requestId = feedRequestId;
+            const requestId = feedRequestIds[mode];
             const params = new URLSearchParams({
                 part: "snippet",
                 maxResults: "50",
@@ -1479,7 +1479,7 @@
                 const data = await response.json();
 
                 // Ignore stale responses after a new search or feed reset.
-                if(requestId !== feedRequestId || state.query !== query) return;
+                if(requestId !== feedRequestIds[mode] || state.query !== query) return;
                 if(!response.ok) throw new Error(data.error?.message || "YouTube API request failed.");
 
                 if(reset) grid.innerHTML = "";
@@ -1505,13 +1505,13 @@
                 }
 
                 if(sentinel && currentMode === mode) {
-                    sentinel.style.display = state.exhausted ? "block" : "none";
+                    sentinel.style.display = "block";
                     sentinel.textContent = state.exhausted
                         ? "Abhi aur results available nahi hain."
-                        : "More videos load as you scroll…";
+                        : "Neeche scroll karein — aur videos load honge…";
                 }
             } catch(error) {
-                if(requestId === feedRequestId) {
+                if(requestId === feedRequestIds[mode]) {
                     showRequestError(grid, error.message || "Network error. Check your connection.", !reset);
                     if(sentinel) {
                         sentinel.style.display = "block";
@@ -1519,9 +1519,21 @@
                     }
                 }
             } finally {
-                if(requestId === feedRequestId) state.loading = false;
-                // If the first batch is shorter than the viewport, the observer
-                // can immediately request the next page when the sentinel enters view.
+                if(requestId === feedRequestIds[mode]) state.loading = false;
+                // Re-check after loading finishes. This also loads another page
+                // when the sentinel is already inside the viewport.
+                if(requestId === feedRequestIds[mode] &&
+                   !state.exhausted && currentMode === mode && feedObserver) {
+                    requestAnimationFrame(() => {
+                        const target = document.getElementById("feedSentinel");
+                        if(target) {
+                            const rect = target.getBoundingClientRect();
+                            if(rect.top <= window.innerHeight + 700) {
+                                loadFeedPage(mode, false);
+                            }
+                        }
+                    });
+                }
             }
         }
 
