@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
   <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-MKHJ74FJ"></script>
 <script>
@@ -104,6 +104,16 @@
             cursor: pointer;
             font-size: 1.1rem;
         }
+        .language-select {
+            min-height: 40px;
+            max-width: 150px;
+            padding: 0 10px;
+            color: var(--text-color);
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+        }
 
         /* Navigation Tabs */
         .nav-tabs {
@@ -199,6 +209,7 @@
             text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
         }
         .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
@@ -241,7 +252,9 @@
         }
         .short-container iframe {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%; border: none;
+            top: 0; left: 
+            
+            0; width: 100%; height: 100%; border: none;
         }
         .short-info { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
         .short-info h3 {
@@ -251,6 +264,7 @@
             text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
         }
 
@@ -807,6 +821,7 @@
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             overflow: hidden;
             font-size: .94rem;
             font-weight: 650;
@@ -1199,13 +1214,14 @@
             .watch-panel.is-short { width: 100%; }
             .watch-panel.is-short .watch-details { width: 100%; }
         }
-        /* Standard video results use a YouTube-style horizontal list; Shorts stay unchanged. */
-        .video-grid {
+        .hero[hidden] { display: none !important; }
+        /* Only submitted Home searches use the horizontal results layout. */
+        #homeView.is-search-results .video-grid {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
-        .video-grid > .video-card {
+        #homeView.is-search-results .video-card {
             display: grid;
             grid-template-columns: minmax(220px, 38%) minmax(0, 1fr);
             align-items: start;
@@ -1218,11 +1234,11 @@
             background: transparent;
             box-shadow: none;
         }
-        .video-grid > .video-card:hover {
+        #homeView.is-search-results .video-card:hover {
             transform: none;
             border-color: var(--border-color);
         }
-        .video-grid .video-container {
+        #homeView.is-search-results .video-container {
             width: 100%;
             aspect-ratio: 16 / 9;
             padding-bottom: 0;
@@ -1230,19 +1246,19 @@
             border: 1px solid var(--card-border);
             border-radius: 12px;
         }
-        .video-grid .video-info {
+        #homeView.is-search-results .video-info {
             min-width: 0;
             padding: 2px 0 0;
             gap: 10px;
         }
-        .video-grid .video-info h3 {
+        #homeView.is-search-results .video-info h3 {
             display: block;
             overflow: visible;
             font-size: clamp(1rem, 1.5vw, 1.2rem);
             font-weight: 600;
             line-height: 1.4;
         }
-        .video-grid .video-meta {
+        #homeView.is-search-results .video-meta {
             white-space: normal;
         }
         .video-description {
@@ -1253,6 +1269,7 @@
             line-height: 1.5;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
         }
         .video-duration {
             position: absolute;
@@ -1267,12 +1284,12 @@
             line-height: 1.2;
         }
         @media (max-width: 600px) {
-            .video-grid > .video-card {
+            #homeView.is-search-results .video-card {
                 grid-template-columns: minmax(0, 1fr);
                 gap: 12px;
                 padding-bottom: 14px;
             }
-            .video-grid .video-info { padding-top: 0; }
+            #homeView.is-search-results .video-info { padding-top: 0; }
         }
     </style>
 </head>
@@ -1289,6 +1306,41 @@
             </button>
         </div>
         <div class="header-actions">
+            <select class="language-select" id="languageSelect" aria-label="Select language" onchange="setLanguage(this.value)">
+                <option value="en">English</option>
+                <option value="hi">हिन्दी</option>
+                <option value="as">অসমীয়া</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="pt">Português</option>
+                <option value="bn">বাংলা</option>
+                <option value="brx">बड़ो (Bodo)</option>
+                <option value="doi">डोगरी</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="ks">कॉशुर / کٲشُر</option>
+                <option value="kok">कोंकणी</option>
+                <option value="mai">मैथिली</option>
+                <option value="ml">മലയാളം</option>
+                <option value="mni">মৈতৈলোন্ / মণিপুরি</option>
+                <option value="mr">मराठी</option>
+                <option value="ne">नेपाली</option>
+                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="sa">संस्कृतम्</option>
+                <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ</option>
+                <option value="sd">سنڌي</option>
+                <option value="ta">தமிழ்</option>
+                <option value="te">తెలుగు</option>
+                <option value="ur">اردو</option>
+                <option value="ar">العربية</option>
+                <option value="zh">中文</option>
+                <option value="id">Bahasa Indonesia</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="ru">Русский</option>
+                <option value="de">Deutsch</option>
+            </select>
             <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
         </div>
     </header>
@@ -1296,27 +1348,27 @@
     <div class="nav-tabs">
         <button class="tab-btn active" id="homeTabBtn" onclick="switchTab('home')">🏠 Home Feed</button>
         <button class="tab-btn" id="shortsTabBtn" onclick="switchTab('shorts')">⚡ Shorts</button>
-        <button class="tab-btn" id="favTabBtn" onclick="switchTab('favorites')">⭐ Favorites (<span id="favCount">0</span>)</button>
+        <button class="tab-btn" id="favTabBtn" onclick="switchTab('favorites')">⭐ Favorites (0)</button>
         <button class="tab-btn" id="historyTabBtn" onclick="switchTab('history')">🕒 Watch History</button>
     </div>
 
     <!-- Quick Filter Categories -->
     <div class="categories" id="categoryBar">
-        <div class="badge" onclick="filterByCategory('Trending Music')">🎵 Music</div>
-        <div class="badge" onclick="filterByCategory('Gaming Gameplay')">🎮 Gaming</div>
-        <div class="badge" onclick="filterByCategory('Lofi Beats Chill')">🎧 Lofi Beats</div>
-        <div class="badge" onclick="filterByCategory('Tech Gadgets Review')">💻 Tech</div>
-        <div class="badge" onclick="filterByCategory('Comedy Standup')">😂 Comedy</div>
-        <div class="badge" onclick="filterByCategory('Bollywood Movie Trailers')">🎬 Trailers</div>
-        <div class="badge" onclick="filterByCategory('Nature Relaxation 4K')">🌿 Nature</div>
+        <div class="badge" data-i18n="music" onclick="filterByCategory('Trending Music')">🎵 Music</div>
+        <div class="badge" data-i18n="gaming" onclick="filterByCategory('Gaming Gameplay')">🎮 Gaming</div>
+        <div class="badge" data-i18n="lofi" onclick="filterByCategory('Lofi Beats Chill')">🎧 Lofi Beats</div>
+        <div class="badge" data-i18n="tech" onclick="filterByCategory('Tech Gadgets Review')">💻 Tech</div>
+        <div class="badge" data-i18n="comedy" onclick="filterByCategory('Comedy Standup')">😂 Comedy</div>
+        <div class="badge" data-i18n="trailers" onclick="filterByCategory('Bollywood Movie Trailers')">🎬 Trailers</div>
+        <div class="badge" data-i18n="nature" onclick="filterByCategory('Nature Relaxation 4K')">🌿 Nature</div>
     </div>
 
     <div class="container">
         <section class="hero">
             <div class="hero-copy">
-                <div class="hero-kicker">● YOUR PERSONAL VIDEO SPACE</div>
-                <h1>Discover something worth watching.</h1>
-                <p>Search videos, explore Shorts, and keep your favorites together — all in one place.</p>
+                <div class="hero-kicker" id="heroKicker">● YOUR PERSONAL VIDEO SPACE</div>
+                <h1 id="heroTitle">Discover something worth watching.</h1>
+                <p id="heroText">Search videos, explore Shorts, and keep your favorites together — all in one place.</p>
             </div>
             <div class="hero-mark" aria-hidden="true">▶</div>
         </section>
@@ -1329,26 +1381,26 @@
 
         <!-- Shorts View -->
         <div id="shortsView" style="display: none;">
-            <div class="section-title">⚡ Viral Shorts Feed</div>
+            <div class="section-title" id="shortsTitle">⚡ Viral Shorts Feed</div>
             <div class="shorts-grid" id="shortsGrid"></div>
         </div>
         <div id="feedSentinel" class="message" style="display:none">More videos load as you scroll…</div>
 
         <!-- Favorites View -->
         <div id="favoritesView" style="display: none;">
-            <div class="section-title">⭐ Your Favorite Videos</div>
+            <div class="section-title" id="favoritesTitle">⭐ Your Favorite Videos</div>
             <div class="video-grid" id="favoritesGrid"></div>
         </div>
 
         <!-- History View -->
         <div id="historyView" style="display: none;">
-            <div class="section-title">🕒 Recently Watched History</div>
+            <div class="section-title" id="historyTitle">🕒 Recently Watched History</div>
             <div class="video-grid" id="historyGrid"></div>
         </div>
     </div>
 
     <footer>
-        <p>ShivaHub <span aria-hidden="true">·</span> Your personal video discovery space</p>
+        <p>ShivaHub <span aria-hidden="true">·</span> <span id="footerText">Your personal video discovery space</span></p>
     </footer>
 
     <div class="watch-dialog" id="watchDialog" aria-hidden="true">
@@ -1371,7 +1423,548 @@
 
     <script>
         const API_KEY = "AIzaSyDfOsM8pVU9aZ42bMpiH2DnXbFUadXpTmI"; // Paste your YouTube Data API v3 key between the quotes.
+        const translations = {
+            en: {
+                searchPlaceholder: "Search videos or shorts...", selectLanguage: "Select language", search: "Search",
+                theme: "Toggle dark/light mode", home: "Home Feed", shorts: "Shorts", favorites: "Favorites ({count})",
+                history: "Watch History", music: "🎵 Music", gaming: "🎮 Gaming", lofi: "🎧 Lofi Beats",
+                tech: "💻 Tech", comedy: "😂 Comedy", trailers: "🎬 Trailers", nature: "🌿 Nature",
+                kicker: "● YOUR PERSONAL VIDEO SPACE", heroTitle: "Discover something worth watching.",
+                heroText: "Search videos, explore Shorts, and keep your favorites together — all in one place.",
+                trending: "🔥 Trending Feed", shortsTitle: "⚡ Viral Shorts Feed", favoritesTitle: "⭐ Your Favorite Videos",
+                historyTitle: "🕒 Recently Watched History", footer: "Your personal video discovery space",
+                loadMore: "More videos load as you scroll…", loading: "Loading videos...",
+                missingKey: "Add your YouTube Data API v3 key between the quotes in the API_KEY setting in index.html to load videos.",
+                noShorts: "No Shorts found. Try another search.", noVideos: "No videos found. Try another search.",
+                end: "You've reached the end of the available results.", scrollMore: "Scroll down to load more videos…",
+                loadFailed: "Loading failed. Scroll to retry or start a new search.",
+                detailsFailed: "Views and duration could not be loaded: {error}",
+                save: "☆ Save", saved: "⭐ Saved", share: "🔗 Share", openYoutube: "▶ Open on YouTube",
+                fullscreen: "Fullscreen", close: "Close video player", emptyFavorites: "You haven't saved any videos yet.",
+                emptyHistory: "Your watch history is empty.", searchResults: "🔎 Search results for: \"{query}\"",
+                views: "views", copied: "Video link copied to clipboard: {url}", sharePrompt: "Copy this video link:",
+                removeFavorite: "Remove from favorites",
+                noFullscreen: "Fullscreen is not supported by this browser. Use the YouTube player's fullscreen button.",
+                fullscreenError: "Could not open fullscreen. You can use the fullscreen button in the YouTube player instead."
+            },
+            hi: {
+                searchPlaceholder: "वीडियो या शॉर्ट्स खोजें...", selectLanguage: "भाषा चुनें", search: "खोजें",
+                theme: "डार्क/लाइट मोड बदलें", home: "होम फ़ीड", shorts: "शॉर्ट्स", favorites: "पसंदीदा ({count})",
+                history: "देखने का इतिहास", music: "🎵 संगीत", gaming: "🎮 गेमिंग", lofi: "🎧 लोफाई बीट्स",
+                tech: "💻 टेक", comedy: "😂 कॉमेडी", trailers: "🎬 ट्रेलर", nature: "🌿 प्रकृति",
+                kicker: "● आपका निजी वीडियो स्पेस", heroTitle: "देखने लायक कुछ खोजें।",
+                heroText: "वीडियो खोजें, शॉर्ट्स देखें और अपने पसंदीदा वीडियो एक जगह रखें।",
+                trending: "🔥 ट्रेंडिंग फ़ीड", shortsTitle: "⚡ वायरल शॉर्ट्स फ़ीड", favoritesTitle: "⭐ आपके पसंदीदा वीडियो",
+                historyTitle: "🕒 हाल ही में देखे गए वीडियो", footer: "आपकी निजी वीडियो खोज की जगह",
+                loadMore: "स्क्रॉल करने पर और वीडियो लोड होंगे…", loading: "वीडियो लोड हो रहे हैं...",
+                missingKey: "वीडियो लोड करने के लिए index.html में API_KEY के उद्धरणों के बीच अपनी YouTube Data API v3 key जोड़ें।",
+                noShorts: "कोई शॉर्ट्स नहीं मिला। दूसरी खोज आज़माएँ।", noVideos: "कोई वीडियो नहीं मिला। दूसरी खोज आज़माएँ।",
+                end: "सभी उपलब्ध नतीजे दिखा दिए गए हैं।", scrollMore: "और वीडियो लोड करने के लिए नीचे स्क्रॉल करें…",
+                loadFailed: "लोड नहीं हुआ। फिर से कोशिश करने के लिए स्क्रॉल करें या नई खोज करें।",
+                detailsFailed: "व्यू और अवधि लोड नहीं हो सके: {error}",
+                save: "☆ सेव करें", saved: "⭐ सेव किया", share: "🔗 शेयर करें", openYoutube: "▶ YouTube पर खोलें",
+                fullscreen: "फ़ुलस्क्रीन", close: "वीडियो प्लेयर बंद करें", emptyFavorites: "आपने अभी तक कोई वीडियो सेव नहीं किया।",
+                emptyHistory: "आपका देखने का इतिहास खाली है।", searchResults: "🔎 \"{query}\" के खोज परिणाम",
+                views: "व्यू", copied: "वीडियो लिंक क्लिपबोर्ड पर कॉपी हुआ: {url}", sharePrompt: "यह वीडियो लिंक कॉपी करें:",
+                noFullscreen: "इस ब्राउज़र में फ़ुलस्क्रीन उपलब्ध नहीं है। YouTube प्लेयर का फ़ुलस्क्रीन बटन इस्तेमाल करें।",
+                fullscreenError: "फ़ुलस्क्रीन नहीं खुला। YouTube प्लेयर का फ़ुलस्क्रीन बटन इस्तेमाल करें।"
+            },
+            es: {
+                searchPlaceholder: "Buscar videos o Shorts...", selectLanguage: "Seleccionar idioma", search: "Buscar",
+                theme: "Cambiar modo oscuro/claro", home: "Inicio", shorts: "Shorts", favorites: "Favoritos ({count})",
+                history: "Historial", music: "🎵 Música", gaming: "🎮 Juegos", lofi: "🎧 Música lo-fi",
+                tech: "💻 Tecnología", comedy: "😂 Comedia", trailers: "🎬 Tráilers", nature: "🌿 Naturaleza",
+                kicker: "● TU ESPACIO PERSONAL DE VIDEOS", heroTitle: "Descubre algo que valga la pena ver.",
+                heroText: "Busca videos, explora Shorts y guarda tus favoritos en un solo lugar.",
+                trending: "🔥 Tendencias", shortsTitle: "⚡ Shorts virales", favoritesTitle: "⭐ Tus videos favoritos",
+                historyTitle: "🕒 Historial reciente", footer: "Tu espacio personal para descubrir videos",
+                loadMore: "Se cargarán más videos al desplazarte…", loading: "Cargando videos...",
+                missingKey: "Añade tu clave de YouTube Data API v3 entre las comillas de API_KEY en index.html para cargar videos.",
+                noShorts: "No se encontraron Shorts. Prueba otra búsqueda.", noVideos: "No se encontraron videos. Prueba otra búsqueda.",
+                end: "Has llegado al final de los resultados disponibles.", scrollMore: "Desplázate para cargar más videos…",
+                loadFailed: "Error al cargar. Desplázate para reintentar o inicia otra búsqueda.",
+                detailsFailed: "No se pudieron cargar las vistas y la duración: {error}",
+                save: "☆ Guardar", saved: "⭐ Guardado", share: "🔗 Compartir", openYoutube: "▶ Abrir en YouTube",
+                fullscreen: "Pantalla completa", close: "Cerrar reproductor", emptyFavorites: "Aún no has guardado videos.",
+                emptyHistory: "Tu historial está vacío.", searchResults: "🔎 Resultados para: \"{query}\"",
+                views: "visualizaciones", copied: "Enlace copiado: {url}", sharePrompt: "Copia este enlace:",
+                noFullscreen: "Este navegador no admite pantalla completa. Usa el botón del reproductor de YouTube.",
+                fullscreenError: "No se pudo abrir la pantalla completa. Usa el botón del reproductor de YouTube."
+            },
+            fr: {
+                searchPlaceholder: "Rechercher des vidéos ou des Shorts...", selectLanguage: "Choisir la langue", search: "Rechercher",
+                theme: "Basculer entre le mode sombre et clair", home: "Accueil", shorts: "Shorts", favorites: "Favoris ({count})",
+                history: "Historique", music: "🎵 Musique", gaming: "🎮 Jeux", lofi: "🎧 Lo-fi",
+                tech: "💻 Technologie", comedy: "😂 Humour", trailers: "🎬 Bandes-annonces", nature: "🌿 Nature",
+                kicker: "● VOTRE ESPACE VIDÉO PERSONNEL", heroTitle: "Découvrez une vidéo qui vaut le détour.",
+                heroText: "Recherchez des vidéos, explorez les Shorts et retrouvez vos favoris au même endroit.",
+                trending: "🔥 Tendances", shortsTitle: "⚡ Shorts populaires", favoritesTitle: "⭐ Vos vidéos favorites",
+                historyTitle: "🕒 Historique récent", footer: "Votre espace personnel de découverte vidéo",
+                loadMore: "D'autres vidéos se chargent en faisant défiler…", loading: "Chargement des vidéos...",
+                missingKey: "Ajoutez votre clé YouTube Data API v3 entre les guillemets de API_KEY dans index.html pour charger les vidéos.",
+                noShorts: "Aucun Short trouvé. Essayez une autre recherche.", noVideos: "Aucune vidéo trouvée. Essayez une autre recherche.",
+                end: "Vous avez atteint la fin des résultats disponibles.", scrollMore: "Faites défiler pour charger plus de vidéos…",
+                loadFailed: "Échec du chargement. Faites défiler pour réessayer ou lancez une nouvelle recherche.",
+                detailsFailed: "Impossible de charger les vues et la durée : {error}",
+                save: "☆ Enregistrer", saved: "⭐ Enregistré", share: "🔗 Partager", openYoutube: "▶ Ouvrir sur YouTube",
+                fullscreen: "Plein écran", close: "Fermer le lecteur", emptyFavorites: "Vous n'avez encore enregistré aucune vidéo.",
+                emptyHistory: "Votre historique est vide.", searchResults: "🔎 Résultats pour : \"{query}\"",
+                views: "vues", copied: "Lien vidéo copié : {url}", sharePrompt: "Copiez ce lien vidéo :",
+                noFullscreen: "Le plein écran n'est pas disponible dans ce navigateur. Utilisez le bouton du lecteur YouTube.",
+                fullscreenError: "Impossible d'ouvrir le plein écran. Utilisez le bouton du lecteur YouTube."
+            },
+            pt: {
+                searchPlaceholder: "Pesquisar vídeos ou Shorts...", selectLanguage: "Selecionar idioma", search: "Pesquisar",
+                theme: "Alternar modo escuro/claro", home: "Início", shorts: "Shorts", favorites: "Favoritos ({count})",
+                history: "Histórico", music: "🎵 Música", gaming: "🎮 Jogos", lofi: "🎧 Lo-fi",
+                tech: "💻 Tecnologia", comedy: "😂 Comédia", trailers: "🎬 Trailers", nature: "🌿 Natureza",
+                kicker: "● SEU ESPAÇO PESSOAL DE VÍDEOS", heroTitle: "Descubra algo que vale a pena assistir.",
+                heroText: "Pesquise vídeos, explore Shorts e reúna seus favoritos em um só lugar.",
+                trending: "🔥 Em alta", shortsTitle: "⚡ Shorts populares", favoritesTitle: "⭐ Seus vídeos favoritos",
+                historyTitle: "🕒 Histórico recente", footer: "Seu espaço pessoal para descobrir vídeos",
+                loadMore: "Mais vídeos serão carregados ao rolar…", loading: "Carregando vídeos...",
+                missingKey: "Adicione sua chave YouTube Data API v3 entre as aspas de API_KEY em index.html para carregar vídeos.",
+                noShorts: "Nenhum Short encontrado. Tente outra pesquisa.", noVideos: "Nenhum vídeo encontrado. Tente outra pesquisa.",
+                end: "Você chegou ao fim dos resultados disponíveis.", scrollMore: "Role para carregar mais vídeos…",
+                loadFailed: "Falha ao carregar. Role para tentar novamente ou faça outra pesquisa.",
+                detailsFailed: "Não foi possível carregar visualizações e duração: {error}",
+                save: "☆ Salvar", saved: "⭐ Salvo", share: "🔗 Compartilhar", openYoutube: "▶ Abrir no YouTube",
+                fullscreen: "Tela cheia", close: "Fechar player", emptyFavorites: "Você ainda não salvou vídeos.",
+                emptyHistory: "Seu histórico está vazio.", searchResults: "🔎 Resultados para: \"{query}\"",
+                views: "visualizações", copied: "Link copiado: {url}", sharePrompt: "Copie este link:",
+                noFullscreen: "Tela cheia não é compatível com este navegador. Use o botão do player do YouTube.",
+                fullscreenError: "Não foi possível abrir a tela cheia. Use o botão do player do YouTube."
+            },
+            bn: {
+                searchPlaceholder: "ভিডিও বা Shorts খুঁজুন...", selectLanguage: "ভাষা নির্বাচন করুন", search: "খুঁজুন",
+                theme: "ডার্ক/লাইট মোড বদলান", home: "হোম ফিড", shorts: "Shorts", favorites: "পছন্দের ({count})",
+                history: "দেখার ইতিহাস", music: "🎵 সঙ্গীত", gaming: "🎮 গেমিং", lofi: "🎧 লো-ফাই",
+                tech: "💻 প্রযুক্তি", comedy: "😂 কমেডি", trailers: "🎬 ট্রেলার", nature: "🌿 প্রকৃতি",
+                kicker: "● আপনার ব্যক্তিগত ভিডিও স্পেস", heroTitle: "দেখার মতো কিছু খুঁজে নিন।",
+                heroText: "ভিডিও খুঁজুন, Shorts দেখুন এবং পছন্দের ভিডিও এক জায়গায় রাখুন।",
+                trending: "🔥 ট্রেন্ডিং ফিড", shortsTitle: "⚡ জনপ্রিয় Shorts", favoritesTitle: "⭐ আপনার পছন্দের ভিডিও",
+                historyTitle: "🕒 সম্প্রতি দেখা ভিডিও", footer: "আপনার ব্যক্তিগত ভিডিও আবিষ্কারের জায়গা",
+                loadMore: "স্ক্রল করলে আরও ভিডিও লোড হবে…", loading: "ভিডিও লোড হচ্ছে...",
+                missingKey: "ভিডিও লোড করতে index.html-এর API_KEY উদ্ধৃতির মধ্যে আপনার YouTube Data API v3 key যোগ করুন।",
+                noShorts: "কোনো Shorts পাওয়া যায়নি। অন্য কিছু খুঁজুন।", noVideos: "কোনো ভিডিও পাওয়া যায়নি। অন্য কিছু খুঁজুন।",
+                end: "সব উপলভ্য ফলাফল দেখানো হয়েছে।", scrollMore: "আরও ভিডিও লোড করতে নিচে স্ক্রল করুন…",
+                loadFailed: "লোড করা যায়নি। আবার চেষ্টা করতে স্ক্রল করুন বা নতুন করে খুঁজুন।",
+                detailsFailed: "ভিউ এবং সময়কাল লোড করা যায়নি: {error}",
+                save: "☆ সংরক্ষণ", saved: "⭐ সংরক্ষিত", share: "🔗 শেয়ার", openYoutube: "▶ YouTube-এ খুলুন",
+                fullscreen: "পূর্ণ পর্দা", close: "ভিডিও প্লেয়ার বন্ধ করুন", emptyFavorites: "আপনি এখনও কোনো ভিডিও সংরক্ষণ করেননি।",
+                emptyHistory: "আপনার দেখার ইতিহাস খালি।", searchResults: "\"{query}\"-এর অনুসন্ধানের ফলাফল",
+                views: "ভিউ", copied: "ভিডিও লিংক কপি হয়েছে: {url}", sharePrompt: "এই ভিডিও লিংক কপি করুন:",
+                noFullscreen: "এই ব্রাউজারে পূর্ণ পর্দা সমর্থিত নয়। YouTube প্লেয়ারের পূর্ণ পর্দা বোতাম ব্যবহার করুন।",
+                fullscreenError: "পূর্ণ পর্দা খোলা যায়নি। YouTube প্লেয়ারের পূর্ণ পর্দা বোতাম ব্যবহার করুন।"
+            },
+            ar: {
+                searchPlaceholder: "ابحث عن فيديوهات أو Shorts...", selectLanguage: "اختر اللغة", search: "بحث",
+                theme: "تبديل الوضع الداكن/الفاتح", home: "الرئيسية", shorts: "Shorts", favorites: "المفضلة ({count})",
+                history: "سجل المشاهدة", music: "🎵 موسيقى", gaming: "🎮 ألعاب", lofi: "🎧 لو-فاي",
+                tech: "💻 تقنية", comedy: "😂 كوميديا", trailers: "🎬 إعلانات", nature: "🌿 طبيعة",
+                kicker: "● مساحتك الشخصية للفيديو", heroTitle: "اكتشف شيئًا يستحق المشاهدة.",
+                heroText: "ابحث عن الفيديوهات واستكشف Shorts واجمع مفضلاتك في مكان واحد.",
+                trending: "🔥 الرائج", shortsTitle: "⚡ Shorts رائجة", favoritesTitle: "⭐ فيديوهاتك المفضلة",
+                historyTitle: "🕒 سجل المشاهدة الأخير", footer: "مساحتك الشخصية لاكتشاف الفيديوهات",
+                loadMore: "حمّل المزيد من الفيديوهات أثناء التمرير…", loading: "جارٍ تحميل الفيديوهات...",
+                missingKey: "أضف مفتاح YouTube Data API v3 بين علامتي الاقتباس في API_KEY داخل index.html لتحميل الفيديوهات.",
+                noShorts: "لم يتم العثور على Shorts. جرّب بحثًا آخر.", noVideos: "لم يتم العثور على فيديوهات. جرّب بحثًا آخر.",
+                end: "وصلت إلى نهاية النتائج المتاحة.", scrollMore: "مرّر لأسفل لتحميل المزيد…",
+                loadFailed: "تعذّر التحميل. مرّر لإعادة المحاولة أو ابدأ بحثًا جديدًا.",
+                detailsFailed: "تعذّر تحميل المشاهدات والمدة: {error}",
+                save: "☆ حفظ", saved: "⭐ محفوظ", share: "🔗 مشاركة", openYoutube: "▶ فتح على YouTube",
+                fullscreen: "ملء الشاشة", close: "إغلاق مشغل الفيديو", emptyFavorites: "لم تحفظ أي فيديو بعد.",
+                emptyHistory: "سجل المشاهدة فارغ.", searchResults: "🔎 نتائج البحث عن: \"{query}\"",
+                views: "مشاهدة", copied: "تم نسخ رابط الفيديو: {url}", sharePrompt: "انسخ رابط الفيديو هذا:",
+                noFullscreen: "ملء الشاشة غير مدعوم في هذا المتصفح. استخدم زر ملء الشاشة في مشغل YouTube.",
+                fullscreenError: "تعذّر فتح ملء الشاشة. استخدم زر ملء الشاشة في مشغل YouTube."
+            },
+            ja: {
+                searchPlaceholder: "動画やショートを検索...", selectLanguage: "言語を選択", search: "検索",
+                theme: "ダーク/ライトモードを切り替え", home: "ホーム", shorts: "ショート", favorites: "お気に入り ({count})",
+                history: "再生履歴", music: "🎵 音楽", gaming: "🎮 ゲーム", lofi: "🎧 Lo-fi",
+                tech: "💻 テクノロジー", comedy: "😂 コメディ", trailers: "🎬 予告編", nature: "🌿 自然",
+                kicker: "● あなた専用の動画スペース", heroTitle: "見たい動画を見つけよう。",
+                heroText: "動画を検索し、ショートを見て、お気に入りをまとめて管理できます。",
+                trending: "🔥 人気の動画", shortsTitle: "⚡ 人気のショート", favoritesTitle: "⭐ お気に入りの動画",
+                historyTitle: "🕒 最近見た動画", footer: "あなただけの動画発見スペース",
+                loadMore: "スクロールすると動画が読み込まれます…", loading: "動画を読み込み中...",
+                missingKey: "動画を読み込むには、index.html の API_KEY の引用符内に YouTube Data API v3 キーを追加してください。",
+                noShorts: "ショートが見つかりません。別の検索をお試しください。", noVideos: "動画が見つかりません。別の検索をお試しください。",
+                end: "利用可能な結果は以上です。", scrollMore: "下にスクロールして続きを読み込む…",
+                loadFailed: "読み込みに失敗しました。スクロールして再試行するか、別の検索をしてください。",
+                detailsFailed: "再生回数と長さを読み込めませんでした: {error}",
+                save: "☆ 保存", saved: "⭐ 保存済み", share: "🔗 共有", openYoutube: "▶ YouTubeで開く",
+                fullscreen: "全画面表示", close: "プレーヤーを閉じる", emptyFavorites: "保存した動画はまだありません。",
+                emptyHistory: "再生履歴はありません。", searchResults: "🔎 「{query}」の検索結果",
+                views: "回視聴", copied: "動画リンクをコピーしました: {url}", sharePrompt: "この動画リンクをコピー:",
+                noFullscreen: "このブラウザーは全画面表示に対応していません。YouTubeプレーヤーのボタンを使用してください。",
+                fullscreenError: "全画面表示にできませんでした。YouTubeプレーヤーのボタンを使用してください。"
+            },
+            de: {
+                searchPlaceholder: "Videos oder Shorts suchen...", selectLanguage: "Sprache auswählen", search: "Suchen",
+                theme: "Dunkel-/Hellmodus wechseln", home: "Startseite", shorts: "Shorts", favorites: "Favoriten ({count})",
+                history: "Wiedergabeverlauf", music: "🎵 Musik", gaming: "🎮 Gaming", lofi: "🎧 Lo-Fi",
+                tech: "💻 Technik", comedy: "😂 Comedy", trailers: "🎬 Trailer", nature: "🌿 Natur",
+                kicker: "● DEIN PERSÖNLICHER VIDEOBEREICH", heroTitle: "Entdecke sehenswerte Videos.",
+                heroText: "Suche Videos, entdecke Shorts und verwalte deine Favoriten an einem Ort.",
+                trending: "🔥 Im Trend", shortsTitle: "⚡ Beliebte Shorts", favoritesTitle: "⭐ Deine Lieblingsvideos",
+                historyTitle: "🕒 Zuletzt angesehen", footer: "Dein persönlicher Bereich zum Entdecken von Videos",
+                loadMore: "Beim Scrollen werden weitere Videos geladen…", loading: "Videos werden geladen...",
+                missingKey: "Füge deinen YouTube Data API v3-Schlüssel in Anführungszeichen bei API_KEY in index.html ein.",
+                noShorts: "Keine Shorts gefunden. Versuche eine andere Suche.", noVideos: "Keine Videos gefunden. Versuche eine andere Suche.",
+                end: "Du hast das Ende der verfügbaren Ergebnisse erreicht.", scrollMore: "Scrolle nach unten, um weitere Videos zu laden…",
+                loadFailed: "Laden fehlgeschlagen. Scrolle zum erneuten Versuch oder starte eine neue Suche.",
+                detailsFailed: "Aufrufe und Dauer konnten nicht geladen werden: {error}",
+                save: "☆ Speichern", saved: "⭐ Gespeichert", share: "🔗 Teilen", openYoutube: "▶ Auf YouTube öffnen",
+                fullscreen: "Vollbild", close: "Videoplayer schließen", emptyFavorites: "Du hast noch keine Videos gespeichert.",
+                emptyHistory: "Dein Wiedergabeverlauf ist leer.", searchResults: "🔎 Suchergebnisse für: \"{query}\"",
+                views: "Aufrufe", copied: "Videolink kopiert: {url}", sharePrompt: "Kopiere diesen Videolink:",
+                noFullscreen: "Dieser Browser unterstützt keinen Vollbildmodus. Nutze die Vollbildtaste im YouTube-Player.",
+                fullscreenError: "Der Vollbildmodus konnte nicht geöffnet werden. Nutze die Vollbildtaste im YouTube-Player."
+            }
+        };
+        const additionalTranslations = {
+            as: {
+                searchPlaceholder: "ভিডিঅ' বা Shorts বিচাৰক...", selectLanguage: "ভাষা বাছনি কৰক", search: "বিচাৰক",
+                theme: "ডাৰ্ক/লাইট মোড সলনি কৰক", home: "হোম ফিড", shorts: "Shorts", favorites: "প্ৰিয় ({count})", history: "চোৱাৰ ইতিহাস",
+                music: "🎵 সংগীত", gaming: "🎮 গেমিং", lofi: "🎧 লো-ফাই", tech: "💻 প্ৰযুক্তি", comedy: "😂 কমেডি", trailers: "🎬 ট্ৰেইলাৰ", nature: "🌿 প্ৰকৃতি",
+                kicker: "● আপোনাৰ ব্যক্তিগত ভিডিঅ' স্থান", heroTitle: "চাবলগীয়া কিবা এটা বিচাৰি পাওক।", heroText: "ভিডিঅ' বিচাৰক, Shorts চাওক আৰু প্ৰিয়বোৰ একে ঠাইতে ৰাখক।",
+                trending: "🔥 জনপ্ৰিয় ভিডিঅ'", shortsTitle: "⚡ জনপ্ৰিয় Shorts", favoritesTitle: "⭐ আপোনাৰ প্ৰিয় ভিডিঅ'", historyTitle: "🕒 শেহতীয়াকৈ চোৱা",
+                loading: "ভিডিঅ' লোড হৈ আছে...", noVideos: "কোনো ভিডিঅ' পোৱা নগ'ল। আন এটা বিচাৰক।", noShorts: "কোনো Shorts পোৱা নগ'ল। আন এটা বিচাৰক।",
+                end: "সকলো উপলব্ধ ফলাফল দেখুওৱা হ'ল।", scrollMore: "অধিক ভিডিঅ'ৰ বাবে তললৈ স্ক্ৰল কৰক…", save: "☆ সংৰক্ষণ", saved: "⭐ সংৰক্ষিত", share: "🔗 শ্বেয়াৰ",
+                openYoutube: "▶ YouTube-ত খোলক", emptyFavorites: "আপুনি এতিয়ালৈ কোনো ভিডিঅ' সংৰক্ষণ কৰা নাই।", emptyHistory: "আপোনাৰ চোৱাৰ ইতিহাস খালী।",
+                searchResults: "\"{query}\"-ৰ বিচাৰ ফলাফল"
+            },
+            brx: {
+                searchPlaceholder: "भिडियो एबा Shorts नागिर...", selectLanguage: "रावखौ सायख'...", search: "नागिर",
+                theme: "डार्क/लाइट मोड सोलाय", home: "गावनि फिड", shorts: "Shorts", favorites: "मोजां ({count})", history: "नायनायनि इतिहास",
+                music: "🎵 सांग्रां", gaming: "🎮 गेमिंग", lofi: "🎧 लो-फाइ", tech: "💻 टेक", comedy: "😂 कमेडी", trailers: "🎬 ट्रेलार", nature: "🌿 प्रकृति",
+                kicker: "● नोंथांनि निजि भिडियो जायगा", heroTitle: "नायनो मोजां मोनसे नागिर।", heroText: "भिडियो नागिर, Shorts नाय आरो मोजांफोरखौ मोनसे जायगायाव दोन।",
+                trending: "🔥 ट्रेंडिं फिड", shortsTitle: "⚡ मोजां Shorts", favoritesTitle: "⭐ नोंथांनि मोजां भिडियो", historyTitle: "🕒 दानि नायनाय",
+                loading: "भिडियो लोड जाबाय...", noVideos: "जेबो भिडियो मोनाखै। गुबुन नागिर।", noShorts: "जेबो Shorts मोनाखै। गुबुन नागिर।",
+                end: "गासै मोननो हाथाव फिथाइखौ दिन्थिबाय।", scrollMore: "बांद्राय भिडियोनिफ्राय गाहाय स्क्रल खालाम…",
+                save: "☆ दोन", saved: "⭐ दोनबाय", share: "🔗 शेयार", openYoutube: "▶ YouTube आव खेव",
+                emptyFavorites: "नोंथाङा दासिमबो जेबो भिडियो दोनाखै।", emptyHistory: "नोंथांनि नायनाय इतिहास गैया।",
+                searchResults: "\"{query}\" नि नागिरनाय फिथाइ"
+            },
+            doi: {
+                searchPlaceholder: "वीडियो जां Shorts खोजो...", selectLanguage: "भाशा चुनो", search: "खोजो",
+                theme: "डार्क/लाइट मोड बदलो", home: "घर फीड", shorts: "Shorts", favorites: "पसंदीदा ({count})", history: "दिक्खने दा इतिहास",
+                music: "🎵 संगीत", gaming: "🎮 गेमिंग", lofi: "🎧 लो-फाई", tech: "💻 तकनीक", comedy: "😂 कॉमेडी", trailers: "🎬 ट्रेलर", nature: "🌿 प्रकृति",
+                kicker: "● तुंदा निजी वीडियो थाह्र", heroTitle: "दिक्खने जोग कुछ खोजो।", heroText: "वीडियो खोजो, Shorts दिक्खो ते पसंदीदा इक थाह्र रक्खो।",
+                trending: "🔥 चलदे वीडियो", shortsTitle: "⚡ मशहूर Shorts", favoritesTitle: "⭐ तुंदे पसंदीदा वीडियो", historyTitle: "🕒 हाल च दिक्खे दे",
+                loading: "वीडियो लोड होआ करदे...", noVideos: "कोई वीडियो नीं लब्भा। दूई खोज करो।", noShorts: "कोई Shorts नीं लब्भा। दूई खोज करो।",
+                end: "सारे उपलब्ध नतीजे दिक्खी चुके।", scrollMore: "होर वीडियो लोड करने आस्तै थल्ले स्क्रॉल करो…",
+                save: "☆ बचाओ", saved: "⭐ बचाया", share: "🔗 सांझा करो", openYoutube: "▶ YouTube पर खोलो",
+                emptyFavorites: "तुसें अजें कोई वीडियो बचाया नेईं।", emptyHistory: "तुंदा दिक्खने दा इतिहास खाल्ली ऐ।",
+                searchResults: "\"{query}\" आस्तै खोज नतीजे"
+            },
+            gu: {
+                searchPlaceholder: "વિડિઓ અથવા Shorts શોધો...", selectLanguage: "ભાષા પસંદ કરો", search: "શોધો",
+                theme: "ડાર્ક/લાઇટ મોડ બદલો", home: "હોમ ફીડ", shorts: "Shorts", favorites: "મનપસંદ ({count})", history: "જોવાનો ઇતિહાસ",
+                music: "🎵 સંગીત", gaming: "🎮 ગેમિંગ", lofi: "🎧 લો-ફાઇ", tech: "💻 ટેક", comedy: "😂 કોમેડી", trailers: "🎬 ટ્રેલર", nature: "🌿 પ્રકૃતિ",
+                kicker: "● તમારી વ્યક્તિગત વિડિઓ જગ્યા", heroTitle: "જોવાલાયક કંઈક શોધો.", heroText: "વિડિઓ શોધો, Shorts જુઓ અને મનપસંદ વિડિઓ એક જગ્યાએ રાખો.",
+                trending: "🔥 ટ્રેન્ડિંગ ફીડ", shortsTitle: "⚡ લોકપ્રિય Shorts", favoritesTitle: "⭐ તમારા મનપસંદ વિડિઓ", historyTitle: "🕒 તાજેતરમાં જોયેલા",
+                loading: "વિડિઓ લોડ થઈ રહ્યા છે...", noVideos: "કોઈ વિડિઓ મળ્યો નથી. બીજી શોધ કરો.", noShorts: "કોઈ Shorts મળ્યા નથી. બીજી શોધ કરો.",
+                end: "ઉપલબ્ધ પરિણામો અહીં પૂરા થાય છે.", scrollMore: "વધુ વિડિઓ લોડ કરવા નીચે સ્ક્રોલ કરો…",
+                save: "☆ સાચવો", saved: "⭐ સાચવ્યું", share: "🔗 શેર કરો", openYoutube: "▶ YouTube પર ખોલો",
+                emptyFavorites: "તમે હજી કોઈ વિડિઓ સાચવ્યો નથી.", emptyHistory: "તમારો જોવાનો ઇતિહાસ ખાલી છે.",
+                searchResults: "\"{query}\" માટે શોધ પરિણામો"
+            },
+            kn: {
+                searchPlaceholder: "ವೀಡಿಯೊ ಅಥವಾ Shorts ಹುಡುಕಿ...", selectLanguage: "ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ", search: "ಹುಡುಕಿ",
+                theme: "ಡಾರ್ಕ್/ಲೈಟ್ ಮೋಡ್ ಬದಲಿಸಿ", home: "ಮುಖಪುಟ", shorts: "Shorts", favorites: "ಮೆಚ್ಚಿನವು ({count})", history: "ವೀಕ್ಷಣೆ ಇತಿಹಾಸ",
+                music: "🎵 ಸಂಗೀತ", gaming: "🎮 ಗೇಮಿಂಗ್", lofi: "🎧 ಲೋ-ಫೈ", tech: "💻 ತಂತ್ರಜ್ಞಾನ", comedy: "😂 ಹಾಸ್ಯ", trailers: "🎬 ಟ್ರೇಲರ್", nature: "🌿 ಪ್ರಕೃತಿ",
+                kicker: "● ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ವೀಡಿಯೊ ತಾಣ", heroTitle: "ನೋಡಲು ಒಳ್ಳೆಯದನ್ನು ಹುಡುಕಿ.", heroText: "ವೀಡಿಯೊಗಳನ್ನು ಹುಡುಕಿ, Shorts ನೋಡಿ ಮತ್ತು ಮೆಚ್ಚಿನವುಗಳನ್ನು ಒಂದೆಡೆ ಇರಿಸಿ.",
+                trending: "🔥 ಟ್ರೆಂಡಿಂಗ್ ಫೀಡ್", shortsTitle: "⚡ ಜನಪ್ರಿಯ Shorts", favoritesTitle: "⭐ ನಿಮ್ಮ ಮೆಚ್ಚಿನ ವೀಡಿಯೊಗಳು", historyTitle: "🕒 ಇತ್ತೀಚೆಗೆ ವೀಕ್ಷಿಸಿದವು",
+                loading: "ವೀಡಿಯೊಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ...", noVideos: "ವೀಡಿಯೊಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಬೇರೆ ಹುಡುಕಾಟ ಪ್ರಯತ್ನಿಸಿ.", noShorts: "Shorts ಕಂಡುಬಂದಿಲ್ಲ. ಬೇರೆ ಹುಡುಕಾಟ ಪ್ರಯತ್ನಿಸಿ.",
+                end: "ಲಭ್ಯವಿರುವ ಫಲಿತಾಂಶಗಳ ಅಂತ್ಯಕ್ಕೆ ಬಂದಿದ್ದೀರಿ.", scrollMore: "ಇನ್ನಷ್ಟು ವೀಡಿಯೊಗಳಿಗಾಗಿ ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ…",
+                save: "☆ ಉಳಿಸಿ", saved: "⭐ ಉಳಿಸಲಾಗಿದೆ", share: "🔗 ಹಂಚಿಕೊಳ್ಳಿ", openYoutube: "▶ YouTube ನಲ್ಲಿ ತೆರೆಯಿರಿ",
+                emptyFavorites: "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ವೀಡಿಯೊ ಉಳಿಸಿಲ್ಲ.", emptyHistory: "ನಿಮ್ಮ ವೀಕ್ಷಣೆ ಇತಿಹಾಸ ಖಾಲಿಯಾಗಿದೆ.",
+                searchResults: "\"{query}\" ಹುಡುಕಾಟದ ಫಲಿತಾಂಶಗಳು"
+            },
+            ks: {
+                searchPlaceholder: "وِڈیو یا Shorts ژھانٛڈِو...", selectLanguage: "زبان ژارِو", search: "ژھانٛڈِو",
+                theme: "ڈارک/لایٹ موڈ بدلاوِو", home: "ہوم فیڈ", shorts: "Shorts", favorites: "پسندیدہ ({count})", history: "وُچھنُک ریکارڈ",
+                music: "🎵 موسیقی", gaming: "🎮 گیمنگ", lofi: "🎧 لو-فای", tech: "💻 ٹیک", comedy: "😂 کامیڈی", trailers: "🎬 ٹریلر", nature: "🌿 قدرت",
+                kicker: "● تُہند ذٲتی وِڈیو جاے", heroTitle: "وُچھنہٕ لایق کینہہ ژھانٛڈِو۔", heroText: "وِڈیو ژھانٛڈِو، Shorts وُچھِو تہٕ پسندیدہ اکھ جایہِ تھاوِو۔",
+                trending: "🔥 ٹرینڈنگ فیڈ", shortsTitle: "⚡ مشہور Shorts", favoritesTitle: "⭐ تُہند پسندیدہ وِڈیو", historyTitle: "🕒 حالیہ وُچھمٕژ",
+                loading: "وِڈیو لوڈ گژھان...", noVideos: "کانہہ وِڈیو نہٕ لبھِ۔ دۄیم ژھانٛڈ کٔرِو۔", noShorts: "کانہہ Shorts نہٕ لبھِ۔ دۄیم ژھانٛڈ کٔرِو۔",
+                end: "دستیاب نتیجن ہٕند آخرس پَہنٛچِو۔", scrollMore: "مزید وِڈیو لوڈ کرنہٕ خٲطرٕ تھَلہٕ سکرول کٔرِو…",
+                save: "☆ محفوظ", saved: "⭐ محفوظ", share: "🔗 شیئر", openYoutube: "▶ YouTube پٮ۪ٹھ کھولِو",
+                emptyFavorites: "تُہندٮ۪ن اَتھ پٲٹھٕ کانہہ وِڈیو محفوظ نہٕ۔", emptyHistory: "تُہند وُچھنُک ریکارڈ خالی چھُ۔",
+                searchResults: "\"{query}\" خٲطرٕ ژھانٛڈنٕچ نتیجہ"
+            },
+            kok: {
+                searchPlaceholder: "व्हिडिओ वा Shorts सोद...", selectLanguage: "भास वेंच", search: "सोद",
+                theme: "डार्क/लायट मोड बदल", home: "मुखेल", shorts: "Shorts", favorites: "आवडते ({count})", history: "पळोवपाचो इतिहास",
+                music: "🎵 संगीत", gaming: "🎮 गेमिंग", lofi: "🎧 लो-फाय", tech: "💻 तंत्रज्ञान", comedy: "😂 विनोद", trailers: "🎬 ट्रेलर", nature: "🌿 निसर्ग",
+                kicker: "● तुमची खाजगी व्हिडिओ जागा", heroTitle: "पळोवपाक बरें किदें तरी सोद.", heroText: "व्हिडिओ सोदात, Shorts पळयात आनी आवडते एकाच सुवातेर दवरात.",
+                trending: "🔥 लोकप्रिय व्हिडिओ", shortsTitle: "⚡ लोकप्रिय Shorts", favoritesTitle: "⭐ तुमचे आवडते व्हिडिओ", historyTitle: "🕒 निमाणे पळयल्ले",
+                loading: "व्हिडिओ लोड जाता...", noVideos: "व्हिडिओ मेळ्ळे ना. दुसरें सोदात.", noShorts: "Shorts मेळ्ळे ना. दुसरें सोदात.",
+                end: "उपलब्ध परिणाम सोंपले.", scrollMore: "आनीक व्हिडिओ लोड करपाक सकयल स्क्रोल करात…",
+                save: "☆ जतन", saved: "⭐ जतन केलें", share: "🔗 वांट", openYoutube: "▶ YouTube-र उगडात",
+                emptyFavorites: "तुमी अजून व्हिडिओ जतन केला ना.", emptyHistory: "तुमचो पळोवपाचो इतिहास रिकामो आसा.",
+                searchResults: "\"{query}\" खातीर सोदाचे परिणाम"
+            },
+            mai: {
+                searchPlaceholder: "वीडियो अथवा Shorts ताकू...", selectLanguage: "भाषा चुनू", search: "ताकू",
+                theme: "डार्क/लाइट मोड बदलू", home: "होम फीड", shorts: "Shorts", favorites: "पसंदीदा ({count})", history: "देखबाक इतिहास",
+                music: "🎵 संगीत", gaming: "🎮 गेमिंग", lofi: "🎧 लो-फाइ", tech: "💻 टेक", comedy: "😂 कॉमेडी", trailers: "🎬 ट्रेलर", nature: "🌿 प्रकृति",
+                kicker: "● अहाँक निजी वीडियो स्थान", heroTitle: "देखबाक योग्य किछु ताकू।", heroText: "वीडियो ताकू, Shorts देखू आ पसंदीदा सब एके ठाम राखू।",
+                trending: "🔥 ट्रेंडिंग फीड", shortsTitle: "⚡ लोकप्रिय Shorts", favoritesTitle: "⭐ अहाँक पसंदीदा वीडियो", historyTitle: "🕒 हालमे देखल",
+                loading: "वीडियो लोड भ रहल अछि...", noVideos: "कोनो वीडियो नहि भेटल। दोसर खोज करू।", noShorts: "कोनो Shorts नहि भेटल। दोसर खोज करू।",
+                end: "उपलब्ध परिणाम सभ समाप्त।", scrollMore: "आओर वीडियो लोड करबाक लेल नीचाँ स्क्रॉल करू…",
+                save: "☆ सहेजू", saved: "⭐ सहेजल", share: "🔗 साझा करू", openYoutube: "▶ YouTube पर खोलू",
+                emptyFavorites: "अहाँ एखन धरि कोनो वीडियो नहि सहेजलहुँ।", emptyHistory: "अहाँक देखबाक इतिहास खाली अछि।",
+                searchResults: "\"{query}\" लेल खोज परिणाम"
+            },
+            ml: {
+                searchPlaceholder: "വീഡിയോ അല്ലെങ്കിൽ Shorts തിരയുക...", selectLanguage: "ഭാഷ തിരഞ്ഞെടുക്കുക", search: "തിരയുക",
+                theme: "ഡാർക്ക്/ലൈറ്റ് മോഡ് മാറ്റുക", home: "ഹോം ഫീഡ്", shorts: "Shorts", favorites: "പ്രിയപ്പെട്ടവ ({count})", history: "കാഴ്ചാ ചരിത്രം",
+                music: "🎵 സംഗീതം", gaming: "🎮 ഗെയിമിംഗ്", lofi: "🎧 ലോ-ഫൈ", tech: "💻 സാങ്കേതികം", comedy: "😂 ഹാസ്യം", trailers: "🎬 ട്രെയിലറുകൾ", nature: "🌿 പ്രകൃതി",
+                kicker: "● നിങ്ങളുടെ സ്വകാര്യ വീഡിയോ ഇടം", heroTitle: "കാണാൻ നല്ലത് എന്തെങ്കിലും കണ്ടെത്തൂ.", heroText: "വീഡിയോകൾ തിരയൂ, Shorts കാണൂ, പ്രിയപ്പെട്ടവ ഒരിടത്ത് സൂക്ഷിക്കൂ.",
+                trending: "🔥 ട്രെൻഡിംഗ് ഫീഡ്", shortsTitle: "⚡ ജനപ്രിയ Shorts", favoritesTitle: "⭐ നിങ്ങളുടെ പ്രിയ വീഡിയോകൾ", historyTitle: "🕒 അടുത്തിടെ കണ്ടവ",
+                loading: "വീഡിയോകൾ ലോഡ് ചെയ്യുന്നു...", noVideos: "വീഡിയോകൾ കണ്ടെത്തിയില്ല. മറ്റൊരു തിരച്ചിൽ ശ്രമിക്കൂ.", noShorts: "Shorts കണ്ടെത്തിയില്ല. മറ്റൊരു തിരച്ചിൽ ശ്രമിക്കൂ.",
+                end: "ലഭ്യമായ ഫലങ്ങൾ അവസാനിച്ചു.", scrollMore: "കൂടുതൽ വീഡിയോകൾക്കായി താഴേക്ക് സ്ക്രോൾ ചെയ്യൂ…",
+                save: "☆ സൂക്ഷിക്കുക", saved: "⭐ സൂക്ഷിച്ചു", share: "🔗 പങ്കിടുക", openYoutube: "▶ YouTube-ൽ തുറക്കുക",
+                emptyFavorites: "നിങ്ങൾ ഇതുവരെ വീഡിയോകളൊന്നും സൂക്ഷിച്ചിട്ടില്ല.", emptyHistory: "നിങ്ങളുടെ കാഴ്ചാ ചരിത്രം ശൂന്യമാണ്.",
+                searchResults: "\"{query}\" തിരച്ചിൽ ഫലങ്ങൾ"
+            },
+            mni: {
+                searchPlaceholder: "ভিডিও নত্রগা Shorts থিবা...", selectLanguage: "লোন খল্লু", search: "থিবা",
+                theme: "ডার্ক/লাইট মোড হোংদোকউ", home: "হোম ফীড", shorts: "Shorts", favorites: "নুংঙাইবা ({count})", history: "য়েংখিবা ইতিহাস",
+                music: "🎵 মিউজিক", gaming: "🎮 গেমিং", lofi: "🎧 লো-ফাই", tech: "💻 টেক", comedy: "😂 কমেডি", trailers: "🎬 ট্রেইলার", nature: "🌿 প্রকৃতি",
+                kicker: "● নঙগী মখা-মথংগী ভিডিও মফম", heroTitle: "য়েংনবা যাগদবা অমা থিবা।", heroText: "ভিডিও থিবা, Shorts য়েংউ অমসুং নুংঙাইবা মখলশিং অমত্তা থম্মো।",
+                trending: "🔥 ট্রেন্ডিং ফীড", shortsTitle: "⚡ ভাইরাল Shorts", favoritesTitle: "⭐ নঙগী নুংঙাইবা ভিডিওশিং", historyTitle: "🕒 হৌজিক ফাওবা য়েংখিবা",
+                loading: "ভিডিও লোড তৌরি...", noVideos: "ভিডিও ফংদে। অতোপ্পা অমা থিবা।", noShorts: "Shorts ফংদে। অতোপ্পা অমা থিবা।",
+                end: "ফংবা ফলশিং লোইরে।", scrollMore: "অতোপ্পা ভিডিও লোড তৌনবা মখাদা স্ক্রল তৌ…",
+                save: "☆ থম্মো", saved: "⭐ থম্লে", share: "🔗 শর তৌ", openYoutube: "▶ YouTube-তা হাংদোকউ",
+                emptyFavorites: "নহাক্না হৌজিক ফাওবা ভিডিও অমত্তা থমদ্রে।", emptyHistory: "নহাক্কী য়েংখিবা ইতিহাস লৈতে।",
+                searchResults: "\"{query}\" গী থিবা ফল"
+            },
+            mr: {
+                searchPlaceholder: "व्हिडिओ किंवा Shorts शोधा...", selectLanguage: "भाषा निवडा", search: "शोधा",
+                theme: "डार्क/लाइट मोड बदला", home: "मुख्य फीड", shorts: "Shorts", favorites: "आवडते ({count})", history: "पाहण्याचा इतिहास",
+                music: "🎵 संगीत", gaming: "🎮 गेमिंग", lofi: "🎧 लो-फाय", tech: "💻 तंत्रज्ञान", comedy: "😂 विनोद", trailers: "🎬 ट्रेलर", nature: "🌿 निसर्ग",
+                kicker: "● तुमची वैयक्तिक व्हिडिओ जागा", heroTitle: "पाहण्यासारखे काहीतरी शोधा.", heroText: "व्हिडिओ शोधा, Shorts पाहा आणि आवडते व्हिडिओ एकाच ठिकाणी ठेवा.",
+                trending: "🔥 ट्रेंडिंग फीड", shortsTitle: "⚡ लोकप्रिय Shorts", favoritesTitle: "⭐ तुमचे आवडते व्हिडिओ", historyTitle: "🕒 अलीकडे पाहिलेले",
+                loading: "व्हिडिओ लोड होत आहेत...", noVideos: "व्हिडिओ सापडले नाहीत. दुसरे शोधा.", noShorts: "Shorts सापडले नाहीत. दुसरे शोधा.",
+                end: "उपलब्ध निकाल संपले आहेत.", scrollMore: "आणखी व्हिडिओ लोड करण्यासाठी खाली स्क्रोल करा…",
+                save: "☆ जतन करा", saved: "⭐ जतन केले", share: "🔗 शेअर करा", openYoutube: "▶ YouTube वर उघडा",
+                emptyFavorites: "तुम्ही अजून कोणताही व्हिडिओ जतन केलेला नाही.", emptyHistory: "तुमचा पाहण्याचा इतिहास रिकामा आहे.",
+                searchResults: "\"{query}\" साठी शोध परिणाम"
+            },
+            ne: {
+                searchPlaceholder: "भिडियो वा Shorts खोज्नुहोस्...", selectLanguage: "भाषा छान्नुहोस्", search: "खोज्नुहोस्",
+                theme: "डार्क/लाइट मोड बदल्नुहोस्", home: "गृह फिड", shorts: "Shorts", favorites: "मनपर्ने ({count})", history: "हेर्ने इतिहास",
+                music: "🎵 सङ्गीत", gaming: "🎮 गेमिङ", lofi: "🎧 लो-फाइ", tech: "💻 प्रविधि", comedy: "😂 हास्य", trailers: "🎬 ट्रेलर", nature: "🌿 प्रकृति",
+                kicker: "● तपाईंको व्यक्तिगत भिडियो स्थान", heroTitle: "हेर्न लायक केही खोज्नुहोस्।", heroText: "भिडियो खोज्नुहोस्, Shorts हेर्नुहोस् र मनपर्नेहरू एउटै ठाउँमा राख्नुहोस्।",
+                trending: "🔥 लोकप्रिय फिड", shortsTitle: "⚡ लोकप्रिय Shorts", favoritesTitle: "⭐ तपाईंका मनपर्ने भिडियो", historyTitle: "🕒 हालै हेरिएका",
+                loading: "भिडियो लोड हुँदैछन्...", noVideos: "भिडियो भेटिएन। अर्को खोज प्रयास गर्नुहोस्।", noShorts: "Shorts भेटिएन। अर्को खोज प्रयास गर्नुहोस्।",
+                end: "उपलब्ध नतिजा सकिए।", scrollMore: "थप भिडियोका लागि तल स्क्रोल गर्नुहोस्…",
+                save: "☆ सुरक्षित गर्नुहोस्", saved: "⭐ सुरक्षित", share: "🔗 साझा गर्नुहोस्", openYoutube: "▶ YouTube मा खोल्नुहोस्",
+                emptyFavorites: "तपाईंले अहिलेसम्म भिडियो सुरक्षित गर्नुभएको छैन।", emptyHistory: "तपाईंको हेर्ने इतिहास खाली छ।",
+                searchResults: "\"{query}\" का खोज नतिजा"
+            },
+            or: {
+                searchPlaceholder: "ଭିଡିଓ କିମ୍ବା Shorts ଖୋଜନ୍ତୁ...", selectLanguage: "ଭାଷା ବାଛନ୍ତୁ", search: "ଖୋଜନ୍ତୁ",
+                theme: "ଡାର୍କ/ଲାଇଟ୍ ମୋଡ୍ ବଦଳାନ୍ତୁ", home: "ମୁଖ୍ୟ ଫିଡ୍", shorts: "Shorts", favorites: "ପସନ୍ଦର ({count})", history: "ଦେଖିବା ଇତିହାସ",
+                music: "🎵 ସଙ୍ଗୀତ", gaming: "🎮 ଗେମିଂ", lofi: "🎧 ଲୋ-ଫାଇ", tech: "💻 ଟେକ୍", comedy: "😂 କମେଡି", trailers: "🎬 ଟ୍ରେଲର୍", nature: "🌿 ପ୍ରକୃତି",
+                kicker: "● ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ଭିଡିଓ ସ୍ଥାନ", heroTitle: "ଦେଖିବା ଯୋଗ୍ୟ କିଛି ଖୋଜନ୍ତୁ।", heroText: "ଭିଡିଓ ଖୋଜନ୍ତୁ, Shorts ଦେଖନ୍ତୁ ଏବଂ ପସନ୍ଦର ଭିଡିଓ ଏକାଠି ରଖନ୍ତୁ।",
+                trending: "🔥 ଟ୍ରେଣ୍ଡିଂ ଫିଡ୍", shortsTitle: "⚡ ଲୋକପ୍ରିୟ Shorts", favoritesTitle: "⭐ ଆପଣଙ୍କ ପସନ୍ଦର ଭିଡିଓ", historyTitle: "🕒 ସମ୍ପ୍ରତି ଦେଖିଥିବା",
+                loading: "ଭିଡିଓ ଲୋଡ୍ ହେଉଛି...", noVideos: "କୌଣସି ଭିଡିଓ ମିଳିଲା ନାହିଁ। ଅନ୍ୟ ଖୋଜନ୍ତୁ।", noShorts: "କୌଣସି Shorts ମିଳିଲା ନାହିଁ। ଅନ୍ୟ ଖୋଜନ୍ତୁ।",
+                end: "ଉପଲବ୍ଧ ଫଳାଫଳ ଶେଷ ହୋଇଛି।", scrollMore: "ଅଧିକ ଭିଡିଓ ପାଇଁ ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ…",
+                save: "☆ ସଂରକ୍ଷଣ", saved: "⭐ ସଂରକ୍ଷିତ", share: "🔗 ସେୟାର୍", openYoutube: "▶ YouTube ରେ ଖୋଲନ୍ତୁ",
+                emptyFavorites: "ଆପଣ ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଭିଡିଓ ସଂରକ୍ଷଣ କରିନାହାନ୍ତି।", emptyHistory: "ଆପଣଙ୍କ ଦେଖିବା ଇତିହାସ ଖାଲି।",
+                searchResults: "\"{query}\" ପାଇଁ ଖୋଜା ଫଳାଫଳ"
+            },
+            pa: {
+                searchPlaceholder: "ਵੀਡੀਓ ਜਾਂ Shorts ਖੋਜੋ...", selectLanguage: "ਭਾਸ਼ਾ ਚੁਣੋ", search: "ਖੋਜੋ",
+                theme: "ਡਾਰਕ/ਲਾਈਟ ਮੋਡ ਬਦਲੋ", home: "ਮੁੱਖ ਫੀਡ", shorts: "Shorts", favorites: "ਮਨਪਸੰਦ ({count})", history: "ਦੇਖਣ ਦਾ ਇਤਿਹਾਸ",
+                music: "🎵 ਸੰਗੀਤ", gaming: "🎮 ਗੇਮਿੰਗ", lofi: "🎧 ਲੋ-ਫਾਈ", tech: "💻 ਤਕਨਾਲੋਜੀ", comedy: "😂 ਕਾਮੇਡੀ", trailers: "🎬 ਟ੍ਰੇਲਰ", nature: "🌿 ਕੁਦਰਤ",
+                kicker: "● ਤੁਹਾਡੀ ਨਿੱਜੀ ਵੀਡੀਓ ਥਾਂ", heroTitle: "ਦੇਖਣ ਯੋਗ ਕੁਝ ਲੱਭੋ।", heroText: "ਵੀਡੀਓ ਖੋਜੋ, Shorts ਦੇਖੋ ਅਤੇ ਮਨਪਸੰਦ ਇੱਕ ਥਾਂ ਰੱਖੋ।",
+                trending: "🔥 ਪ੍ਰਸਿੱਧ ਫੀਡ", shortsTitle: "⚡ ਪ੍ਰਸਿੱਧ Shorts", favoritesTitle: "⭐ ਤੁਹਾਡੇ ਮਨਪਸੰਦ ਵੀਡੀਓ", historyTitle: "🕒 ਹਾਲ ਹੀ ਵਿੱਚ ਦੇਖੇ",
+                loading: "ਵੀਡੀਓ ਲੋਡ ਹੋ ਰਹੇ ਹਨ...", noVideos: "ਕੋਈ ਵੀਡੀਓ ਨਹੀਂ ਮਿਲਿਆ। ਹੋਰ ਖੋਜੋ।", noShorts: "ਕੋਈ Shorts ਨਹੀਂ ਮਿਲਿਆ। ਹੋਰ ਖੋਜੋ।",
+                end: "ਉਪਲਬਧ ਨਤੀਜੇ ਖ਼ਤਮ ਹੋ ਗਏ ਹਨ।", scrollMore: "ਹੋਰ ਵੀਡੀਓ ਲਈ ਹੇਠਾਂ ਸਕ੍ਰੋਲ ਕਰੋ…",
+                save: "☆ ਸੰਭਾਲੋ", saved: "⭐ ਸੰਭਾਲਿਆ", share: "🔗 ਸਾਂਝਾ ਕਰੋ", openYoutube: "▶ YouTube 'ਤੇ ਖੋਲ੍ਹੋ",
+                emptyFavorites: "ਤੁਸੀਂ ਹਾਲੇ ਕੋਈ ਵੀਡੀਓ ਸੰਭਾਲਿਆ ਨਹੀਂ।", emptyHistory: "ਤੁਹਾਡਾ ਦੇਖਣ ਦਾ ਇਤਿਹਾਸ ਖਾਲੀ ਹੈ।",
+                searchResults: "\"{query}\" ਲਈ ਖੋਜ ਨਤੀਜੇ"
+            },
+            sa: {
+                searchPlaceholder: "चलचित्राणि Shorts वा अन्विष्यताम्...", selectLanguage: "भाषां चिनुत", search: "अन्विष्यताम्",
+                theme: "श्याम/श्वेत-विधिं परिवर्तयतु", home: "मुख्यप्रवाहः", shorts: "Shorts", favorites: "प्रियाणि ({count})", history: "दर्शन-इतिहासः",
+                music: "🎵 सङ्गीतम्", gaming: "🎮 क्रीडा", lofi: "🎧 लो-फाइ", tech: "💻 तन्त्रम्", comedy: "😂 हास्यम्", trailers: "🎬 पूर्वदर्शनानि", nature: "🌿 प्रकृतिः",
+                kicker: "● भवतः निजं चलचित्रस्थानम्", heroTitle: "दर्शनीयम् किमपि अन्विष्यताम्।", heroText: "चलचित्राणि अन्विष्यताम्, Shorts पश्यत, प्रियाणि च एकत्र स्थापयत।",
+                trending: "🔥 लोकप्रियप्रवाहः", shortsTitle: "⚡ लोकप्रियानि Shorts", favoritesTitle: "⭐ भवतः प्रियाणि चलचित्राणि", historyTitle: "🕒 अद्यतनदृष्टानि",
+                loading: "चलचित्राणि प्रचलन्ति...", noVideos: "चलचित्रं न प्राप्तम्। अन्यत् अन्विष्यताम्।", noShorts: "Shorts न प्राप्तम्। अन्यत् अन्विष्यताम्।",
+                end: "उपलब्धानि फलानि समाप्तानि।", scrollMore: "अधिकचलचित्रार्थम् अधः गच्छतु…",
+                save: "☆ रक्षतु", saved: "⭐ रक्षितम्", share: "🔗 संविभजतु", openYoutube: "▶ YouTube मध्ये उद्घाटयतु",
+                emptyFavorites: "भवता चलचित्रं न रक्षितम्।", emptyHistory: "भवतः दर्शन-इतिहासः रिक्तः।",
+                searchResults: "\"{query}\" अन्वेषणफलानि"
+            },
+            sat: {
+                searchPlaceholder: "ভিডিও আর Shorts খোঁজ...", selectLanguage: "ভাষা বাছাও", search: "খোঁজ",
+                theme: "ডার্ক/লাইট মোড বদলাও", home: "হোম ফিড", shorts: "Shorts", favorites: "মোনে পসন্দ ({count})", history: "নেল্ ইতিহাস",
+                music: "🎵 সেরেঞ", gaming: "🎮 গেমিং", lofi: "🎧 লো-ফাই", tech: "💻 টেক", comedy: "😂 কমেডি", trailers: "🎬 ট্রেলার", nature: "🌿 দারে",
+                kicker: "● আমাক্ নিজোর ভিডিও ঠাঁই", heroTitle: "নেল্ লাআত্ পে ভিডিও খোঁজ।", heroText: "ভিডিও খোঁজ, Shorts নেল্ আর পসন্দ ভিডিও কো মিত্ ঠাঁই রে দহ।",
+                trending: "🔥 চলন্ ফিড", shortsTitle: "⚡ ভাইরাল Shorts", favoritesTitle: "⭐ আমাক্ পসন্দ ভিডিও", historyTitle: "🕒 নেল্ আকান",
+                loading: "ভিডিও লোড হোচো...", noVideos: "ভিডিও বাং নাপাম লেনা। এটোহ্ খোঁজ।", noShorts: "Shorts বাং নাপাম লেনা। এটোহ্ খোঁজ।",
+                end: "পাম লেন্ ফল শেষ আকানা।", scrollMore: "বাড়তি ভিডিও লোড লাগিত্ লাতার স্ক্রল মে…",
+                save: "☆ সাম্বাড়", saved: "⭐ সাম্বাড় আকানা", share: "🔗 ভাগাও", openYoutube: "▶ YouTube রে ঝিজ",
+                emptyFavorites: "আম্ তেহেঞ ভিডিও বাং সাম্বাড় আকাদা।", emptyHistory: "আমাক্ নেল্ ইতিহাস রিক্তাঃ।",
+                searchResults: "\"{query}\" লাগিত্ খোঁজ ফল"
+            },
+            sd: {
+                searchPlaceholder: "وڊيو يا Shorts ڳوليو...", selectLanguage: "ٻولي چونڊيو", search: "ڳوليو",
+                theme: "ڊارڪ/لائيٽ موڊ بدلايو", home: "مکيه فيڊ", shorts: "Shorts", favorites: "پسنديده ({count})", history: "ڏسڻ جي تاريخ",
+                music: "🎵 موسيقي", gaming: "🎮 گيمنگ", lofi: "🎧 لو-فائي", tech: "💻 ٽيڪ", comedy: "😂 مزاح", trailers: "🎬 ٽريلر", nature: "🌿 فطرت",
+                kicker: "● توهان جي ذاتي وڊيو جڳهه", heroTitle: "ڏسڻ لائق ڪجهه ڳوليو.", heroText: "وڊيو ڳوليو، Shorts ڏسو ۽ پسنديده هڪ هنڌ رکو.",
+                trending: "🔥 مقبول فيڊ", shortsTitle: "⚡ مشهور Shorts", favoritesTitle: "⭐ توهان جون پسنديده وڊيوز", historyTitle: "🕒 تازو ڏٺل",
+                loading: "وڊيوز لوڊ ٿي رهيون آهن...", noVideos: "ڪا وڊيو نه ملي. ٻي ڳولا ڪريو.", noShorts: "ڪو Shorts نه مليو. ٻي ڳولا ڪريو.",
+                end: "سڀ موجود نتيجا ڏيکاريا ويا.", scrollMore: "وڌيڪ وڊيوز لاءِ هيٺ اسڪرول ڪريو…",
+                save: "☆ محفوظ ڪريو", saved: "⭐ محفوظ", share: "🔗 شيئر ڪريو", openYoutube: "▶ YouTube تي کوليو",
+                emptyFavorites: "توهان اڃا ڪا وڊيو محفوظ نه ڪئي آهي.", emptyHistory: "توهان جي ڏسڻ جي تاريخ خالي آهي.",
+                searchResults: "\"{query}\" جا ڳولا نتيجا"
+            },
+            ta: {
+                searchPlaceholder: "வீடியோ அல்லது Shorts தேடுங்கள்...", selectLanguage: "மொழியைத் தேர்ந்தெடுக்கவும்", search: "தேடு",
+                theme: "டார்க்/லைட் பயன்முறையை மாற்று", home: "முகப்பு", shorts: "Shorts", favorites: "விருப்பமானவை ({count})", history: "பார்த்த வரலாறு",
+                music: "🎵 இசை", gaming: "🎮 கேமிங்", lofi: "🎧 லோ-ஃபை", tech: "💻 தொழில்நுட்பம்", comedy: "😂 நகைச்சுவை", trailers: "🎬 முன்னோட்டம்", nature: "🌿 இயற்கை",
+                kicker: "● உங்கள் தனிப்பட்ட வீடியோ இடம்", heroTitle: "பார்க்கத் தகுந்த ஒன்றைக் கண்டறியுங்கள்.", heroText: "வீடியோக்களைத் தேடி, Shorts பார்த்து, விருப்பமானவற்றை ஒரே இடத்தில் வையுங்கள்.",
+                trending: "🔥 பிரபலமானவை", shortsTitle: "⚡ பிரபல Shorts", favoritesTitle: "⭐ உங்கள் விருப்பமான வீடியோக்கள்", historyTitle: "🕒 சமீபத்தில் பார்த்தவை",
+                loading: "வீடியோக்கள் ஏற்றப்படுகின்றன...", noVideos: "வீடியோ கிடைக்கவில்லை. வேறு தேடலை முயற்சிக்கவும்.", noShorts: "Shorts கிடைக்கவில்லை. வேறு தேடலை முயற்சிக்கவும்.",
+                end: "கிடைக்கக்கூடிய முடிவுகள் முடிந்துவிட்டன.", scrollMore: "மேலும் வீடியோக்களை ஏற்ற கீழே உருட்டுங்கள்…",
+                save: "☆ சேமி", saved: "⭐ சேமிக்கப்பட்டது", share: "🔗 பகிர்", openYoutube: "▶ YouTube-இல் திற",
+                emptyFavorites: "நீங்கள் இன்னும் வீடியோக்களைச் சேமிக்கவில்லை.", emptyHistory: "உங்கள் பார்த்த வரலாறு காலியாக உள்ளது.",
+                searchResults: "\"{query}\" தேடல் முடிவுகள்"
+            },
+            te: {
+                searchPlaceholder: "వీడియోలు లేదా Shorts వెతకండి...", selectLanguage: "భాషను ఎంచుకోండి", search: "వెతకండి",
+                theme: "డార్క్/లైట్ మోడ్ మార్చండి", home: "హోమ్ ఫీడ్", shorts: "Shorts", favorites: "ఇష్టమైనవి ({count})", history: "వీక్షణ చరిత్ర",
+                music: "🎵 సంగీతం", gaming: "🎮 గేమింగ్", lofi: "🎧 లో-ఫై", tech: "💻 టెక్", comedy: "😂 కామెడీ", trailers: "🎬 ట్రైలర్లు", nature: "🌿 ప్రకృతి",
+                kicker: "● మీ వ్యక్తిగత వీడియో స్థలం", heroTitle: "చూడదగినదాన్ని కనుగొనండి.", heroText: "వీడియోలు వెతకండి, Shorts చూడండి, ఇష్టమైనవాటిని ఒకేచోట ఉంచండి.",
+                trending: "🔥 ట్రెండింగ్ ఫీడ్", shortsTitle: "⚡ జనాదరణ పొందిన Shorts", favoritesTitle: "⭐ మీ ఇష్టమైన వీడియోలు", historyTitle: "🕒 ఇటీవల చూసినవి",
+                loading: "వీడియోలు లోడ్ అవుతున్నాయి...", noVideos: "వీడియోలు కనబడలేదు. మరొకసారి వెతకండి.", noShorts: "Shorts కనబడలేదు. మరొకసారి వెతకండి.",
+                end: "అందుబాటులో ఉన్న ఫలితాలు పూర్తయ్యాయి.", scrollMore: "మరిన్ని వీడియోల కోసం కిందికి స్క్రోల్ చేయండి…",
+                save: "☆ సేవ్ చేయండి", saved: "⭐ సేవ్ చేయబడింది", share: "🔗 షేర్ చేయండి", openYoutube: "▶ YouTubeలో తెరవండి",
+                emptyFavorites: "మీరు ఇంకా వీడియోలను సేవ్ చేయలేదు.", emptyHistory: "మీ వీక్షణ చరిత్ర ఖాళీగా ఉంది.",
+                searchResults: "\"{query}\" శోధన ఫలితాలు"
+            },
+            ur: {
+                searchPlaceholder: "ویڈیو یا Shorts تلاش کریں...", selectLanguage: "زبان منتخب کریں", search: "تلاش",
+                theme: "ڈارک/لائٹ موڈ تبدیل کریں", home: "ہوم فیڈ", shorts: "Shorts", favorites: "پسندیدہ ({count})", history: "دیکھنے کی تاریخ",
+                music: "🎵 موسیقی", gaming: "🎮 گیمنگ", lofi: "🎧 لو فائی", tech: "💻 ٹیک", comedy: "😂 مزاح", trailers: "🎬 ٹریلر", nature: "🌿 فطرت",
+                kicker: "● آپ کی ذاتی ویڈیو جگہ", heroTitle: "دیکھنے کے قابل کچھ تلاش کریں۔", heroText: "ویڈیوز تلاش کریں، Shorts دیکھیں اور پسندیدہ ایک جگہ رکھیں۔",
+                trending: "🔥 مقبول فیڈ", shortsTitle: "⚡ مقبول Shorts", favoritesTitle: "⭐ آپ کی پسندیدہ ویڈیوز", historyTitle: "🕒 حال ہی میں دیکھی گئیں",
+                loading: "ویڈیوز لوڈ ہو رہی ہیں...", noVideos: "کوئی ویڈیو نہیں ملی۔ دوسری تلاش کریں۔", noShorts: "کوئی Shorts نہیں ملے۔ دوسری تلاش کریں۔",
+                end: "تمام دستیاب نتائج دکھا دیے گئے ہیں۔", scrollMore: "مزید ویڈیوز کے لیے نیچے اسکرول کریں…",
+                save: "☆ محفوظ کریں", saved: "⭐ محفوظ", share: "🔗 شیئر کریں", openYoutube: "▶ YouTube پر کھولیں",
+                emptyFavorites: "آپ نے ابھی کوئی ویڈیو محفوظ نہیں کی۔", emptyHistory: "آپ کی دیکھنے کی تاریخ خالی ہے۔",
+                searchResults: "\"{query}\" کے تلاش کے نتائج"
+            },
+            zh: {
+                searchPlaceholder: "搜索视频或 Shorts...", selectLanguage: "选择语言", search: "搜索",
+                theme: "切换深色/浅色模式", home: "首页", shorts: "Shorts", favorites: "收藏 ({count})", history: "观看记录",
+                music: "🎵 音乐", gaming: "🎮 游戏", lofi: "🎧 Lo-fi", tech: "💻 科技", comedy: "😂 喜剧", trailers: "🎬 预告片", nature: "🌿 自然",
+                kicker: "● 你的专属视频空间", heroTitle: "发现值得一看的内容。", heroText: "搜索视频、浏览 Shorts，并在一处收藏喜欢的内容。",
+                trending: "🔥 热门视频", shortsTitle: "⚡ 热门 Shorts", favoritesTitle: "⭐ 你收藏的视频", historyTitle: "🕒 最近观看",
+                loading: "正在加载视频...", noVideos: "未找到视频，请尝试其他搜索。", noShorts: "未找到 Shorts，请尝试其他搜索。",
+                end: "已显示全部可用结果。", scrollMore: "向下滚动以加载更多视频…",
+                save: "☆ 收藏", saved: "⭐ 已收藏", share: "🔗 分享", openYoutube: "▶ 在 YouTube 中打开",
+                emptyFavorites: "你还没有收藏视频。", emptyHistory: "观看记录为空。", searchResults: "\"{query}\" 的搜索结果"
+            },
+            id: {
+                searchPlaceholder: "Cari video atau Shorts...", selectLanguage: "Pilih bahasa", search: "Cari",
+                theme: "Ubah mode gelap/terang", home: "Beranda", shorts: "Shorts", favorites: "Favorit ({count})", history: "Histori tontonan",
+                music: "🎵 Musik", gaming: "🎮 Gim", lofi: "🎧 Lo-fi", tech: "💻 Teknologi", comedy: "😂 Komedi", trailers: "🎬 Trailer", nature: "🌿 Alam",
+                kicker: "● RUANG VIDEO PRIBADI ANDA", heroTitle: "Temukan sesuatu yang layak ditonton.", heroText: "Cari video, jelajahi Shorts, dan simpan favorit di satu tempat.",
+                trending: "🔥 Sedang tren", shortsTitle: "⚡ Shorts populer", favoritesTitle: "⭐ Video favorit Anda", historyTitle: "🕒 Baru ditonton",
+                loading: "Memuat video...", noVideos: "Video tidak ditemukan. Coba pencarian lain.", noShorts: "Shorts tidak ditemukan. Coba pencarian lain.",
+                end: "Semua hasil yang tersedia telah ditampilkan.", scrollMore: "Gulir ke bawah untuk memuat video lainnya…",
+                save: "☆ Simpan", saved: "⭐ Tersimpan", share: "🔗 Bagikan", openYoutube: "▶ Buka di YouTube",
+                emptyFavorites: "Anda belum menyimpan video.", emptyHistory: "Histori tontonan Anda kosong.",
+                searchResults: "🔎 Hasil pencarian untuk: \"{query}\""
+            },
+            ko: {
+                searchPlaceholder: "동영상 또는 Shorts 검색...", selectLanguage: "언어 선택", search: "검색",
+                theme: "다크/라이트 모드 전환", home: "홈", shorts: "Shorts", favorites: "즐겨찾기 ({count})", history: "시청 기록",
+                music: "🎵 음악", gaming: "🎮 게임", lofi: "🎧 로파이", tech: "💻 기술", comedy: "😂 코미디", trailers: "🎬 예고편", nature: "🌿 자연",
+                kicker: "● 나만의 동영상 공간", heroTitle: "볼 만한 콘텐츠를 찾아보세요.", heroText: "동영상을 검색하고 Shorts를 둘러보며 즐겨찾기를 한곳에 모아 보세요.",
+                trending: "🔥 인기 동영상", shortsTitle: "⚡ 인기 Shorts", favoritesTitle: "⭐ 즐겨찾는 동영상", historyTitle: "🕒 최근 시청",
+                loading: "동영상을 불러오는 중...", noVideos: "동영상을 찾을 수 없습니다. 다른 검색어를 입력해 보세요.", noShorts: "Shorts를 찾을 수 없습니다. 다시 검색해 보세요.",
+                end: "사용 가능한 검색 결과가 끝났습니다.", scrollMore: "아래로 스크롤하여 동영상을 더 불러오세요…",
+                save: "☆ 저장", saved: "⭐ 저장됨", share: "🔗 공유", openYoutube: "▶ YouTube에서 열기",
+                emptyFavorites: "아직 저장한 동영상이 없습니다.", emptyHistory: "시청 기록이 비어 있습니다.",
+                searchResults: "\"{query}\" 검색 결과"
+            },
+            ru: {
+                searchPlaceholder: "Искать видео или Shorts...", selectLanguage: "Выберите язык", search: "Поиск",
+                theme: "Переключить тёмную/светлую тему", home: "Главная", shorts: "Shorts", favorites: "Избранное ({count})", history: "История просмотров",
+                music: "🎵 Музыка", gaming: "🎮 Игры", lofi: "🎧 Лоу-фай", tech: "💻 Технологии", comedy: "😂 Комедии", trailers: "🎬 Трейлеры", nature: "🌿 Природа",
+                kicker: "● ВАШЕ ЛИЧНОЕ ВИДЕОПРОСТРАНСТВО", heroTitle: "Найдите видео, которое стоит посмотреть.", heroText: "Ищите видео, смотрите Shorts и сохраняйте избранное в одном месте.",
+                trending: "🔥 В тренде", shortsTitle: "⚡ Популярные Shorts", favoritesTitle: "⭐ Ваши любимые видео", historyTitle: "🕒 Недавно просмотренные",
+                loading: "Загрузка видео...", noVideos: "Видео не найдены. Попробуйте другой запрос.", noShorts: "Shorts не найдены. Попробуйте другой запрос.",
+                end: "Это все доступные результаты.", scrollMore: "Прокрутите вниз, чтобы загрузить ещё видео…",
+                save: "☆ Сохранить", saved: "⭐ Сохранено", share: "🔗 Поделиться", openYoutube: "▶ Открыть на YouTube",
+                emptyFavorites: "Вы пока не сохраняли видео.", emptyHistory: "История просмотров пуста.",
+                searchResults: "🔎 Результаты поиска: \"{query}\""
+            }
+        };
+        Object.entries(additionalTranslations).forEach(([code, values]) => {
+            translations[code] = { ...translations.en, ...values };
+        });
+        const translatedLabels = {
+            en: { views: "views", removeFavorite: "Remove from favorites" },
+            hi: { views: "व्यू", removeFavorite: "पसंदीदा से हटाएँ" },
+            es: { views: "visualizaciones", removeFavorite: "Quitar de favoritos" },
+            fr: { views: "vues", removeFavorite: "Retirer des favoris" },
+            pt: { views: "visualizações", removeFavorite: "Remover dos favoritos" },
+            bn: { views: "ভিউ", removeFavorite: "পছন্দের তালিকা থেকে সরান" },
+            ar: { views: "مشاهدة", removeFavorite: "إزالة من المفضلة" },
+            ja: { views: "回視聴", removeFavorite: "お気に入りから削除" },
+            de: { views: "Aufrufe", removeFavorite: "Aus Favoriten entfernen" },
+            as: { views: "দৰ্শন", removeFavorite: "প্ৰিয়ৰ পৰা আঁতৰাওক" },
+            brx: { views: "नायनाय", removeFavorite: "मोजांनिफ्राय बोखार" },
+            doi: { views: "दर्शन", removeFavorite: "पसंदीदा चा कड्डो" },
+            gu: { views: "વ્યૂઝ", removeFavorite: "મનપસંદમાંથી દૂર કરો" },
+            kn: { views: "ವೀಕ್ಷಣೆಗಳು", removeFavorite: "ಮೆಚ್ಚಿನವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ" },
+            ks: { views: "وُچھ", removeFavorite: "پسندیدہ منزٕ کٔڈِو" },
+            kok: { views: "पळोवप", removeFavorite: "आवडत्यांतल्यान काडात" },
+            mai: { views: "बार देखल", removeFavorite: "पसंदीदा सँ हटाउ" },
+            ml: { views: "കാഴ്ചകൾ", removeFavorite: "പ്രിയപ്പെട്ടവയിൽ നിന്ന് നീക്കുക" },
+            mni: { views: "য়েংখিবা", removeFavorite: "নুংঙাইবা মদুগী লৌথোকউ" },
+            mr: { views: "दृश्ये", removeFavorite: "आवडत्यांमधून काढा" },
+            ne: { views: "हेराइ", removeFavorite: "मनपर्नेबाट हटाउनुहोस्" },
+            or: { views: "ଦର୍ଶନ", removeFavorite: "ପସନ୍ଦରୁ ହଟାନ୍ତୁ" },
+            pa: { views: "ਵਿਊਜ਼", removeFavorite: "ਮਨਪਸੰਦ ਵਿੱਚੋਂ ਹਟਾਓ" },
+            sa: { views: "दर्शनानि", removeFavorite: "प्रियसूचीतः निष्कासयतु" },
+            sat: { views: "নেল্", removeFavorite: "পসন্দ রে খান" },
+            sd: { views: "ڏٺل", removeFavorite: "پسنديده مان هٽايو" },
+            ta: { views: "பார்வைகள்", removeFavorite: "விருப்பமானவற்றிலிருந்து நீக்கு" },
+            te: { views: "వీక్షణలు", removeFavorite: "ఇష్టమైన వాటి నుండి తీసివేయండి" },
+            ur: { views: "دیکھے گئے", removeFavorite: "پسندیدہ سے ہٹائیں" },
+            zh: { views: "次观看", removeFavorite: "从收藏中移除" },
+            id: { views: "penayangan", removeFavorite: "Hapus dari favorit" },
+            ko: { views: "회 시청", removeFavorite: "즐겨찾기에서 삭제" },
+            ru: { views: "просмотров", removeFavorite: "Убрать из избранного" }
+        };
+        Object.entries(translatedLabels).forEach(([code, labels]) => {
+            Object.assign(translations[code], labels);
+        });
+        const languageLocales = {
+            en: "en-US", hi: "hi-IN", as: "as-IN", es: "es-ES", fr: "fr-FR", pt: "pt-BR", bn: "bn-BD",
+            brx: "brx-IN", doi: "doi-IN", gu: "gu-IN", kn: "kn-IN", ks: "ks-IN", kok: "kok-IN",
+            mai: "mai-IN", ml: "ml-IN", mni: "mni-IN", mr: "mr-IN", ne: "ne-NP", or: "or-IN",
+            pa: "pa-IN", sa: "sa-IN", sat: "sat-IN", sd: "sd-IN", ta: "ta-IN", te: "te-IN",
+            ur: "ur-IN", ar: "ar", zh: "zh-CN", id: "id-ID", ja: "ja-JP", ko: "ko-KR",
+            ru: "ru-RU", de: "de-DE"
+        };
+        const savedLanguage = localStorage.getItem("shivahub_language");
+        let currentLanguage = Object.prototype.hasOwnProperty.call(translations, savedLanguage) ? savedLanguage : "en";
         let currentMode = 'home';
+        let activeHomeSearch = "";
         let activeVideo = null;
         let lastFocusedElement = null;
         
@@ -1380,6 +1973,113 @@
         let history = JSON.parse(localStorage.getItem("shivahub_history")) || [];
         
         updateFavCount();
+        applyLanguage();
+
+        function translate(key, values = {}) {
+            const template = translations[currentLanguage]?.[key] || translations.en[key] || key;
+            return template.replace(/\{(\w+)\}/g, (match, name) =>
+                Object.prototype.hasOwnProperty.call(values, name) ? values[name] : match
+            );
+        }
+
+        function setLanguage(language) {
+            if(!Object.prototype.hasOwnProperty.call(translations, language)) return;
+            currentLanguage = language;
+            localStorage.setItem("shivahub_language", language);
+            applyLanguage();
+        }
+
+        function applyLanguage() {
+            const html = document.documentElement;
+            const locale = languageLocales[currentLanguage] || "en-US";
+            html.lang = currentLanguage;
+            html.dir = currentLanguage === "ar" || currentLanguage === "ur" ? "rtl" : "ltr";
+
+            const languageSelect = document.getElementById("languageSelect");
+            if(languageSelect) {
+                languageSelect.value = currentLanguage;
+                languageSelect.setAttribute("aria-label", translate("selectLanguage"));
+            }
+            const searchInput = document.getElementById("searchQuery");
+            searchInput.placeholder = translate("searchPlaceholder");
+            const searchButton = document.querySelector(".search-btn");
+            searchButton.setAttribute("aria-label", translate("search"));
+            const themeButton = document.getElementById("themeToggleBtn");
+            themeButton.title = translate("theme");
+            themeButton.setAttribute("aria-label", translate("theme"));
+
+            document.getElementById("homeTabBtn").textContent = `🏠 ${translate("home")}`;
+            document.getElementById("shortsTabBtn").textContent = `⚡ ${translate("shorts")}`;
+            document.getElementById("favTabBtn").textContent = `⭐ ${translate("favorites", { count: favorites.length })}`;
+            document.getElementById("historyTabBtn").textContent = `🕒 ${translate("history")}`;
+            document.querySelectorAll(".categories [data-i18n]").forEach(element => {
+                element.textContent = translate(element.dataset.i18n);
+            });
+            document.getElementById("heroKicker").textContent = translate("kicker");
+            document.getElementById("heroTitle").textContent = translate("heroTitle");
+            document.getElementById("heroText").textContent = translate("heroText");
+            document.getElementById("shortsTitle").textContent = translate("shortsTitle");
+            document.getElementById("favoritesTitle").textContent = translate("favoritesTitle");
+            document.getElementById("historyTitle").textContent = translate("historyTitle");
+            document.getElementById("footerText").textContent = translate("footer");
+            document.getElementById("watchFullscreen").title = translate("fullscreen");
+            document.getElementById("watchFullscreen").setAttribute("aria-label", translate("fullscreen"));
+            document.getElementById("watchClose").setAttribute("aria-label", translate("close"));
+            document.getElementById("watchFavorite").textContent = translate("save");
+            document.getElementById("watchShare").textContent = translate("share");
+            document.getElementById("watchYoutube").textContent = translate("openYoutube");
+            document.querySelectorAll(".message[data-i18n-key]").forEach(message => {
+                message.textContent = translate(message.dataset.i18nKey);
+            });
+            document.querySelectorAll(".video-card, .short-card").forEach(card => {
+                const buttons = card.querySelectorAll(".action-icon-btn");
+                if(buttons[0]) {
+                    const isSaved = buttons[0].classList.contains("liked");
+                    buttons[0].textContent = isSaved ? translate("saved") : translate("save");
+                    buttons[0].setAttribute("aria-label", isSaved ? translate("removeFavorite") : translate("save"));
+                }
+                if(buttons[1]) buttons[1].textContent = translate("share");
+                const metadata = card.querySelector(".video-meta");
+                if(metadata) metadata.textContent = formatVideoMeta(
+                    card.dataset.channelTitle || "",
+                    card.dataset.publishedAt || "",
+                    card.dataset.viewCount || ""
+                );
+            });
+            if(currentMode === "home") {
+                document.getElementById("homeTitle").textContent = activeHomeSearch
+                    ? translate("searchResults", { query: activeHomeSearch })
+                    : translate("trending");
+            }
+            updateFavCount();
+            updateWatchFavoriteButton();
+            const sentinel = document.getElementById("feedSentinel");
+            if(sentinel.dataset.i18nKey) sentinel.textContent = translate(sentinel.dataset.i18nKey);
+            if(currentMode === "favorites") renderFavorites();
+            if(currentMode === "history") renderHistory();
+            if(activeVideo) {
+                document.getElementById("watchMeta").textContent = formatVideoMeta(
+                    activeVideo.channelTitle, activeVideo.publishedAt, activeVideo.viewCount
+                );
+            }
+            return locale;
+        }
+
+        function formatVideoMeta(channelTitle, publishedAt, viewCount = "") {
+            const locale = languageLocales[currentLanguage] || "en-US";
+            const formattedViews = viewCount
+                ? `${new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(Number(viewCount))} ${translate("views")}`
+                : "";
+            const publishedDate = publishedAt
+                ? new Date(publishedAt).toLocaleDateString(locale)
+                : "";
+            return [channelTitle, formattedViews, publishedDate].filter(Boolean).join(" · ");
+        }
+
+        function setFeedMessage(element, key) {
+            element.dataset.i18nKey = key;
+            element.textContent = translate(key);
+        }
 
         function toggleTheme() {
             let html = document.documentElement;
@@ -1395,6 +2095,7 @@
 
         function switchTab(tab) {
             currentMode = tab;
+            updateHomePresentation();
             ['homeTabBtn', 'shortsTabBtn', 'favTabBtn', 'historyTabBtn'].forEach(id => {
                 document.getElementById(id).classList.remove("active");
             });
@@ -1430,6 +2131,12 @@
             executeSearch();
         }
 
+        function updateHomePresentation() {
+            const isHomeFeed = currentMode === "home";
+            document.querySelector(".hero").hidden = !isHomeFeed || Boolean(activeHomeSearch);
+            document.getElementById("homeView").classList.toggle("is-search-results", Boolean(activeHomeSearch));
+        }
+
         // YouTube search.list returns at most 50 results per request.
         // nextPageToken is used to request the next batch as the user scrolls.
         const feedState = {
@@ -1461,15 +2168,16 @@
         function showApiKeyMessage(grid) {
             if(!API_KEY.trim()) {
                 grid.replaceChildren();
-                showRequestError(grid, "YouTube videos load karne ke liye index.html mein API_KEY setting ke quotes ke beech apni YouTube Data API v3 key add karein.");
+                showRequestError(grid, translate("missingKey"), false, "missingKey");
                 return true;
             }
             return false;
         }
 
-        function showRequestError(grid, message, append = false) {
+        function showRequestError(grid, message, append = false, translationKey = "") {
             const errorMessage = document.createElement("div");
             errorMessage.className = "message";
+            if(translationKey) errorMessage.dataset.i18nKey = translationKey;
             errorMessage.textContent = message;
             if(append) grid.appendChild(errorMessage);
             else grid.replaceChildren(errorMessage);
@@ -1510,12 +2218,12 @@
             if(reset) {
                 resetFeed(mode);
                 state.query = query;
-                grid.innerHTML = "<div class='message'>Videos load ho rahe hain...</div>";
+                showRequestError(grid, translate("loading"), false, "loading");
             } else if(state.query !== query) {
                 reset = true;
                 resetFeed(mode);
                 state.query = query;
-                grid.innerHTML = "<div class='message'>Videos load ho rahe hain...</div>";
+                showRequestError(grid, translate("loading"), false, "loading");
             }
 
             state.loading = true;
@@ -1532,7 +2240,7 @@
             const sentinel = document.getElementById("feedSentinel");
             if(sentinel && currentMode === mode) {
                 sentinel.style.display = "block";
-                sentinel.textContent = "More videos load as you scroll…";
+                setFeedMessage(sentinel, "loadMore");
             }
 
             try {
@@ -1562,7 +2270,9 @@
                         (detailsData.items || []).forEach(item => videoDetails.set(item.id, item));
                     } catch(error) {
                         console.error("Could not load additional video details.", error);
-                        detailsError = `Views and duration could not be loaded: ${error.message || "YouTube API request failed."}`;
+                        detailsError = translate("detailsFailed", {
+                            error: error.message || "YouTube API request failed."
+                        });
                     }
                 }
 
@@ -1590,23 +2300,20 @@
                 state.exhausted = !state.nextPageToken;
 
                 if(!grid.querySelector(".video-card, .short-card")) {
-                    showRequestError(grid, mode === "shorts"
-                        ? "No Shorts found. Try another search."
-                        : "No videos found. Try another search.");
+                    const messageKey = mode === "shorts" ? "noShorts" : "noVideos";
+                    showRequestError(grid, translate(messageKey), false, messageKey);
                 }
 
                 if(sentinel && currentMode === mode) {
                     sentinel.style.display = "block";
-                    sentinel.textContent = state.exhausted
-                        ? "Abhi aur results available nahi hain."
-                        : "Neeche scroll karein — aur videos load honge…";
+                    setFeedMessage(sentinel, state.exhausted ? "end" : "scrollMore");
                 }
             } catch(error) {
                 if(requestId === feedRequestIds[mode]) {
-                    showRequestError(grid, error.message || "Network error. Check your connection.", !reset);
+                    showRequestError(grid, error.message || translate("loadFailed"), !reset);
                     if(sentinel) {
                         sentinel.style.display = "block";
-                        sentinel.textContent = "Load failed. Scroll again or search again.";
+                        setFeedMessage(sentinel, "loadFailed");
                     }
                 }
             } finally {
@@ -1629,8 +2336,12 @@
         }
 
         async function fetchHomeVideos() {
+            activeHomeSearch = document.getElementById("searchQuery").value.trim();
+            updateHomePresentation();
             document.getElementById("homeTitle").innerText =
-                `🔥 Trending / Search: "${document.getElementById("searchQuery").value.trim() || "For you"}"`;
+                activeHomeSearch
+                    ? translate("searchResults", { query: activeHomeSearch })
+                    : translate("trending");
             await loadFeedPage("home", true);
         }
 
@@ -1650,6 +2361,9 @@
             let isFav = favorites.some(v => v.id === videoId);
             let card = document.createElement("div");
             card.className = isShort ? "short-card" : "video-card";
+            card.dataset.channelTitle = channelTitle;
+            card.dataset.publishedAt = publishedAt;
+            card.dataset.viewCount = details?.statistics?.viewCount || "";
 
             let player = document.createElement("div");
             player.className = isShort ? "short-container" : "video-container";
@@ -1680,12 +2394,7 @@
             if(channelTitle) {
                 let metadata = document.createElement("p");
                 metadata.className = "video-meta";
-                const viewCount = details?.statistics?.viewCount;
-                const formattedViews = viewCount
-                    ? `${new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(Number(viewCount))} views`
-                    : "";
-                const publishedDate = publishedAt ? new Date(publishedAt).toLocaleDateString() : "";
-                metadata.textContent = [channelTitle, formattedViews, publishedDate].filter(Boolean).join(" · ");
+                metadata.textContent = formatVideoMeta(channelTitle, publishedAt, card.dataset.viewCount);
                 info.appendChild(metadata);
             }
             if(!isShort && description) {
@@ -1699,13 +2408,13 @@
 
             let favoriteButton = document.createElement("button");
             favoriteButton.className = `action-icon-btn${isFav ? " liked" : ""}`;
-            favoriteButton.textContent = isFav ? "⭐ Saved" : "☆ Save";
-            favoriteButton.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
+            favoriteButton.textContent = isFav ? translate("saved") : translate("save");
+            favoriteButton.setAttribute("aria-label", isFav ? translate("removeFavorite") : translate("save"));
             favoriteButton.addEventListener("click", () => toggleFavorite(videoId, title, favoriteButton, channelTitle, publishedAt));
 
             let shareButton = document.createElement("button");
             shareButton.className = "action-icon-btn";
-            shareButton.textContent = "🔗 Share";
+            shareButton.textContent = translate("share");
             shareButton.addEventListener("click", () => shareVideo(videoId));
 
             actions.append(favoriteButton, shareButton);
@@ -1739,12 +2448,16 @@
         }
 
         function openVideo(videoId, title, trigger, channelTitle = "", publishedAt = "", isShort = false) {
-            activeVideo = { id: videoId, title, channelTitle, publishedAt };
+            activeVideo = {
+                id: videoId,
+                title,
+                channelTitle,
+                publishedAt,
+                viewCount: trigger?.dataset.viewCount || ""
+            };
             lastFocusedElement = trigger || document.activeElement;
             document.getElementById("watchTitle").textContent = title;
-            document.getElementById("watchMeta").textContent = channelTitle
-                ? (publishedAt ? `${channelTitle} · ${new Date(publishedAt).toLocaleDateString()}` : channelTitle)
-                : "";
+            document.getElementById("watchMeta").textContent = formatVideoMeta(channelTitle, publishedAt, activeVideo.viewCount);
             document.getElementById("watchYoutube").href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
 
             let player = document.getElementById("watchPlayer");
@@ -1792,9 +2505,9 @@
             let button = document.getElementById("watchFavorite");
             if(!activeVideo) return;
             let isFav = favorites.some(video => video.id === activeVideo.id);
-            button.textContent = isFav ? "⭐ Saved" : "☆ Save";
+            button.textContent = isFav ? translate("saved") : translate("save");
             button.classList.toggle("liked", isFav);
-            button.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
+            button.setAttribute("aria-label", isFav ? translate("removeFavorite") : translate("save"));
         }
 
         function toggleWatchFavorite() {
@@ -1814,8 +2527,8 @@
             if(button) {
                 let isFavorite = index === -1;
                 button.classList.toggle("liked", isFavorite);
-                button.textContent = isFavorite ? "⭐ Saved" : "☆ Save";
-                button.setAttribute("aria-label", isFavorite ? "Remove from favorites" : "Add to favorites");
+                button.textContent = isFavorite ? translate("saved") : translate("save");
+                button.setAttribute("aria-label", isFavorite ? translate("removeFavorite") : translate("save"));
             }
             if(currentMode === 'favorites') renderFavorites();
         }
@@ -1823,7 +2536,7 @@
         function renderFavorites() {
             let grid = document.getElementById("favoritesGrid");
             if(favorites.length === 0) {
-                grid.innerHTML = "<div class='message'>Aapne koi video favorite nahi kiya hai.</div>";
+                showRequestError(grid, translate("emptyFavorites"), false, "emptyFavorites");
                 return;
             }
             grid.innerHTML = "";
@@ -1842,7 +2555,7 @@
         function renderHistory() {
             let grid = document.getElementById("historyGrid");
             if(history.length === 0) {
-                grid.innerHTML = "<div class='message'>Aapki watch history khali hai.</div>";
+                showRequestError(grid, translate("emptyHistory"), false, "emptyHistory");
                 return;
             }
             grid.innerHTML = "";
@@ -1852,16 +2565,16 @@
         }
 
         function updateFavCount() {
-            document.getElementById("favCount").innerText = favorites.length;
+            document.getElementById("favTabBtn").textContent = `⭐ ${translate("favorites", { count: favorites.length })}`;
         }
 
         async function shareVideo(videoId) {
             let link = `https://youtu.be/${videoId}`;
             try {
                 await navigator.clipboard.writeText(link);
-                alert("Video link copied to clipboard: " + link);
+                alert(translate("copied", { url: link }));
             } catch(error) {
-                window.prompt("Copy this video link:", link);
+                window.prompt(translate("sharePrompt"), link);
             }
         }
 
@@ -1907,10 +2620,11 @@
                 } else if(player.requestFullscreen) {
                     await player.requestFullscreen();
                 } else {
-                    alert("Fullscreen is not supported by this browser. Use the YouTube player's fullscreen button.");
+                    alert(translate("noFullscreen"));
                 }
             } catch(error) {
-                alert("Could not open fullscreen. You can use the fullscreen button in the YouTube player instead.");
+                console.error("Could not open fullscreen.", error);
+                alert(translate("fullscreenError"));
             }
         }
     </script>
